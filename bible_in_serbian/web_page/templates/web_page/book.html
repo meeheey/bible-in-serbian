@@ -1,0 +1,10 @@
+{% extends "web_page/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <h2 class="my-4">{{ book.title }}</h2>
+   {% for verse in verses %}
+   <p><strong>{{ verse.chapter}}: {{ verse.verse_number }}</strong> {{ verse.verse }}</p>
+   {% endfor %}
+</div>
+{% endblock %}

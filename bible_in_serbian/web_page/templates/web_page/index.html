@@ -10,6 +10,7 @@
                     <th scope="col">Бр.</th>
                     <th scope="col">Скраћеница</th>
                     <th scope="col">Назив</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -18,6 +19,7 @@
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ book.acronym }}</td>
                     <td>{{ book.title }}</td>
+                    <td><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-outline-primary">📖</a></td>          
                 </tr>
                 {% endfor %}
             </tbody>

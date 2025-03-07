@@ -11,3 +11,11 @@ def index(request):
     return render(request, "web_page/index.html", {
         "books": books
     })
+
+def show_book(request, book_id):
+    book = Books.objects.get(id=book_id)
+    verses = Verses.objects.filter(book=book) 
+    return render(request, "web_page/book.html", {
+        "book": book,
+        "verses": verses
+    })

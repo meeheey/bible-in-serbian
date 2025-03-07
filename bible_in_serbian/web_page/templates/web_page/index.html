@@ -1,7 +1,27 @@
 {% extends "web_page/layout.html" %}
 
 {% block body %}
-{% for book in books %}
-<p>{{ book.acronym }}, {{ book.title }}</p>
-{% endfor %}
+<div class="container">
+    <h2 class="my-4">Књиге Светог писма</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Бр.</th>
+                    <th scope="col">Скраћеница</th>
+                    <th scope="col">Назив</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ book.acronym }}</td>
+                    <td>{{ book.title }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

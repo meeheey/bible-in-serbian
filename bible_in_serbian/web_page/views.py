@@ -19,3 +19,9 @@ def show_book(request, book_id):
         "book": book,
         "verses": verses
     })
+
+def comparative_reading(request):
+    books = Books.objects.all()
+    return render(request, "web_page/comparative_reading.html", {
+        "books": books
+    })

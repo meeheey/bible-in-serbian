@@ -1,0 +1,121 @@
+{% extends "web_page/layout.html" %}
+
+{% block body %}
+<h2 class="my-4">Упоредно читање</h2>
+<div class="controls">
+    <div>
+        <label for="book1">Књ. 1:</label>
+        <select id="book1">
+            <option value="">--Одабери књигу--</option>
+            {% for book in books %}
+            <option value="{{ book.id }}">{{ book.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="book2">Књ. 2:</label>
+        <select id="book2">
+            <option value="">--Одабери књигу--</option>
+            {% for book in books %}
+            <option value="{{ book.id }}">{{ book.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Претрага стихова">
+    </div>
+</div>
+
+<div class="verses-container">
+    <div id="verses1"></div>
+    <div id="verses2"></div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Add event listeners for dropdowns
+    document.getElementById('book1').addEventListener('change', function() {
+        const bookId = this.value;
+        if (bookId) {
+            fetchVerses(bookId, 'verses1');
+        } else {
+            document.getElementById('verses1').innerHTML = '';
+        }
+    });
+
+    document.getElementById('book2').addEventListener('change', function() {
+        const bookId = this.value;
+        if (bookId) {
+            fetchVerses(bookId, 'verses2');
+        } else {
+            document.getElementById('verses2').innerHTML = '';
+        }
+    });
+
+    // Add event listener for search bar
+    document.getElementById('searchBar').addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        filterVerses('verses1', searchText);
+        filterVerses('verses2', searchText);
+    });
+
+    // Fetch verses from the server
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrfToken = getCookie('csrftoken');
+
+    function fetchVerses(bookId, targetDivId) {
+        fetch(`/fetch/${bookId}/`, {
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const versesHtml = data.verses.map(verse => 
+                `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                    <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
+                </div>`
+            ).join('');
+            document.getElementById(targetDivId).innerHTML = versesHtml;
+        })
+        .catch(error => {
+            console.error('Error fetching verses:', error);
+            document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
+        });
+    }
+
+    // Filter verses
+    function filterVerses(targetDivId, searchText) {
+        const verses = document.querySelectorAll(`#${targetDivId} .verse`);
+        verses.forEach(verse => {
+            const verseText = verse.textContent.toLowerCase();
+            if (verseText.includes(searchText)) {
+                verse.style.display = '';
+            } else {
+                verse.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

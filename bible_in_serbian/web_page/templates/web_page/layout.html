@@ -55,6 +55,97 @@
         .footer a:hover {
             text-decoration: underline;
         }
+           /* Dropdown and search bar container */
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        /* Dropdown styling */
+        select {
+            padding: 10px;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 250px;
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #e0a800;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+        }
+
+        /* Search bar styling */
+        .search-container {
+            flex: 1;
+        }
+
+        .search-container input {
+            padding: 10px;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            color: #333;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-container input:hover {
+            border-color: #e0a800;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #ffc107;
+            box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+        }
+
+        /* Verses container */
+        .verses-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .verses-container div {
+            width: 100%;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Verse styling */
+        .verse {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .verse strong {
+            color: #007bff;
+        }
+
+        /* Highlight styling */
+        .highlight {
+            background-color: #ffc107;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -68,6 +159,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'index' %}"><i class="fas fa-home"></i> Почетна</a>
+                        <a class="nav-link" href="{% url 'comparative reading' %}"><i class="fas fa-book-open"></i>Упоредно читање</a>
                     </li>
                     <!-- Add more navigation items here -->
                 </ul>

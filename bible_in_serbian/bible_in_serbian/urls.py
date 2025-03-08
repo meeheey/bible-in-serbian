@@ -19,5 +19,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("web_page.urls"))
+    path("fetch/", include("verse_fetcher.urls")),
+    path("", include("web_page.urls")),
 ]

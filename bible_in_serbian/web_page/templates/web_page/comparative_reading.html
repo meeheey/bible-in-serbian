@@ -80,42 +80,86 @@
     const csrfToken = getCookie('csrftoken');
 
     function fetchVerses(bookId, targetDivId) {
-        fetch(`/fetch/${bookId}/`, {
-            headers: {
-                'X-CSRFToken': csrfToken
+    fetch(`/fetch/${bookId}/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        const versesHtml = data.verses.map(verse => {
+            if (verse.verse_number === 0) {
+                // Format for heading verses
+                return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                            <strong>${verse.chapter}</strong> <em>${verse.verse}</em>
+                        </div>`;
+            } else {
+                // Format for regular verses
+                return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                            <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
+                        </div>`;
             }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+        }).join('');
+        document.getElementById(targetDivId).innerHTML = versesHtml;
+    })
+    .catch(error => {
+        console.error('Error fetching verses:', error);
+        document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
+    });
+}
+
+function filterVerses(targetDivId, searchText) {
+    const verses = document.querySelectorAll(`#${targetDivId} .verse`);
+    const searchTerms = searchText.toLowerCase().split(/\s+/); // Split search text into terms
+
+    // Helper function to check if a verse matches the search terms
+    function matchesSearch(verseText, terms) {
+        let result = true;
+        terms.forEach(term => {
+            if (term.startsWith('!')) {
+                // NOT operator: term should NOT be present
+                if (verseText.includes(term.slice(1))) {
+                    result = false;
+                }
+            } else if (term.includes('&')) {
+                // AND operator: all sub-terms must be present
+                const subTerms = term.split('&');
+                if (!subTerms.every(subTerm => verseText.includes(subTerm))) {
+                    result = false;
+                }
+            } else if (term.includes('|')) {
+                // OR operator: at least one sub-term must be present
+                const subTerms = term.split('|');
+                if (!subTerms.some(subTerm => verseText.includes(subTerm))) {
+                    result = false;
+                }
+            } else {
+                // Default: term must be present
+                if (!verseText.includes(term)) {
+                    result = false;
+                }
             }
-            return response.json();
-        })
-        .then(data => {
-            const versesHtml = data.verses.map(verse => 
-                `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
-                    <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
-                </div>`
-            ).join('');
-            document.getElementById(targetDivId).innerHTML = versesHtml;
-        })
-        .catch(error => {
-            console.error('Error fetching verses:', error);
-            document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
         });
+        return result;
     }
 
     // Filter verses
-    function filterVerses(targetDivId, searchText) {
-        const verses = document.querySelectorAll(`#${targetDivId} .verse`);
-        verses.forEach(verse => {
-            const verseText = verse.textContent.toLowerCase();
-            if (verseText.includes(searchText)) {
-                verse.style.display = '';
-            } else {
-                verse.style.display = 'none';
-            }
-        });
-    }
+    verses.forEach(verse => {
+        const verseText = verse.textContent.toLowerCase();
+
+        if (matchesSearch(verseText, searchTerms)) {
+            // Show verses that match the search
+            verse.style.display = '';
+        } else {
+            // Hide verses that don't match
+            verse.style.display = 'none';
+        }
+    });
+}
 </script>
 {% endblock %}

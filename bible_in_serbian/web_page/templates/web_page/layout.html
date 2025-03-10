@@ -88,8 +88,11 @@
 
         /* Search bar styling */
         .search-container {
-            flex: 1;
-        }
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
 
         .search-container input {
             padding: 10px;
@@ -112,6 +115,54 @@
             border-color: #ffc107;
             box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
         }
+
+        .info-button {
+        margin-left: 10px;
+        background-color: #ffc107;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .info-button:hover {
+        background-color: #0056b3;
+    }
+
+    .tooltip {
+        visibility: hidden;
+        width: 250px;
+        background-color: #333;
+        color: #fff;
+        text-align: left;
+        border-radius: 5px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .search-container:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltip code {
+    color: #ffc107; /* Change this to your desired color */
+    padding: 2px 4px; /* Optional: Add padding for better readability */
+    border-radius: 3px; /* Optional: Add rounded corners */
+    font-family: monospace; /* Ensure the font is monospace */
+}
 
         /* Verses container */
         .verses-container {
@@ -159,7 +210,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'index' %}"><i class="fas fa-home"></i> Почетна</a>
-                        <a class="nav-link" href="{% url 'comparative reading' %}"><i class="fas fa-book-open"></i>Упоредно читање</a>
+                        <a class="nav-link" href="{% url 'comparative reading' %}"><i class="fas fa-book-open"></i> Упоредно читање</a>
                     </li>
                     <!-- Add more navigation items here -->
                 </ul>

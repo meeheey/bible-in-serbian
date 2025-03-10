@@ -1,34 +1,157 @@
 {% extends "web_page/layout.html" %}
 
 {% block body %}
+<h2 class="my-4" id="bookTitle">{{ book.title }}</h2>
 
-<div class="container">
-    <h2 class="my-4">{{ book.title }}</h2>
-    <div class="search-container my-4">
-    <input type="text" id="searchBar" placeholder="Претрага стихова" class="form-control">
-</div>
-    {% for verse in verses %}
-    <div class="verse">
-        <p>
-            <strong class="chapter-verse">{{ verse.chapter }}:{{ verse.verse_number }}</strong>
-            <span class="verse-text">{{ verse.verse }}</span>
-        </p>
+<div class="search-container">
+    <input type="text" id="searchBar" placeholder="Претрага стихова">
+    <!-- Add "i" button with tooltip -->
+    <button id="searchInfo" class="info-button" aria-label="Search Help">i</button>
+    <div id="searchTooltip" class="tooltip">
+        <strong>Оператори претраге:</strong><br>
+        - Користи <code>&</code> за И (нпр., <code>фарисеј&садукеј</code>).<br>
+        - Користи <code>|</code> за ИЛИ (нпр., <code>фарисеј|садукеј</code>).<br>
+        - Користи <code>!</code> за НЕ (нпр., <code>!фарисеј</code>).<br>
     </div>
-    {% endfor %}
 </div>
 
+<div class="verses-container">
+    <div id="verses"></div>
+</div>
+
+<!-- JavaScript -->
 <script>
+    // Add event listener for search bar
     document.getElementById('searchBar').addEventListener('input', function() {
         const searchText = this.value.toLowerCase();
-        const verses = document.querySelectorAll('.verse');
+        filterVerses('verses', searchText);
+    });
+
+    // Fetch verses from the server
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrfToken = getCookie('csrftoken');
+
+    function fetchVerses(bookId, targetDivId) {
+        fetch(`/fetch/${bookId}/`, {
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const versesHtml = data.verses.map(verse => {
+                if (verse.verse_number === 0) {
+                    // Format for heading verses
+                    return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                                <strong>${verse.chapter}</strong> <em>${verse.verse}</em>
+                            </div>`;
+                } else {
+                    // Format for regular verses
+                    return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                                <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
+                            </div>`;
+                }
+            }).join('');
+            document.getElementById(targetDivId).innerHTML = versesHtml;
+        })
+        .catch(error => {
+            console.error('Error fetching verses:', error);
+            document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
+        });
+    }
+
+    function filterVerses(targetDivId, searchText) {
+        const verses = document.querySelectorAll(`#${targetDivId} .verse`);
+        const searchTerms = searchText.toLowerCase().split(/\s+/); // Split search text into terms
+
+        // Helper function to check if a verse matches the search terms
+        function matchesSearch(verseText, terms) {
+            let result = true;
+            terms.forEach(term => {
+                if (term.startsWith('!')) {
+                    // NOT operator: term should NOT be present
+                    if (verseText.includes(term.slice(1))) {
+                        result = false;
+                    }
+                } else if (term.includes('&')) {
+                    // AND operator: all sub-terms must be present
+                    const subTerms = term.split('&');
+                    if (!subTerms.every(subTerm => verseText.includes(subTerm))) {
+                        result = false;
+                    }
+                } else if (term.includes('|')) {
+                    // OR operator: at least one sub-term must be present
+                    const subTerms = term.split('|');
+                    if (!subTerms.some(subTerm => verseText.includes(subTerm))) {
+                        result = false;
+                    }
+                } else {
+                    // Default: term must be present
+                    if (!verseText.includes(term)) {
+                        result = false;
+                    }
+                }
+            });
+            return result;
+        }
+
+        // Filter verses
         verses.forEach(verse => {
             const verseText = verse.textContent.toLowerCase();
-            if (verseText.includes(searchText)) {
+
+            if (matchesSearch(verseText, searchTerms)) {
+                // Show verses that match the search
                 verse.style.display = '';
             } else {
+                // Hide verses that don't match
                 verse.style.display = 'none';
             }
         });
-    });
+    }
+
+    // Preload the book from the URL
+    window.onload = function() {
+        const bookId = "{{ book.id }}";
+        if (bookId) {
+            fetchVerses(bookId, 'verses');
+        }
+    };
 </script>
+
+<!-- CSS for search bar width -->
+<style>
+    .search-container {
+        width: 100%;
+        max-width: 100%; /* Ensure it spans the full width */
+    }
+
+    #searchBar {
+        width: 100%; /* Make the search bar as wide as its container */
+        box-sizing: border-box; /* Include padding and border in the width */
+    }
+
+    .verses-container {
+        width: 100%;
+        margin-top: 20px; /* Add some spacing between search bar and verses */
+    }
+</style>
 {% endblock %}

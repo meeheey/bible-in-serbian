@@ -14,10 +14,10 @@ def index(request):
 
 def show_book(request, book_id):
     book = Books.objects.get(id=book_id)
-    verses = Verses.objects.filter(book=book) 
+    books = Books.objects.all() 
     return render(request, "web_page/book.html", {
         "book": book,
-        "verses": verses
+        "books": books
     })
 
 def comparative_reading(request):

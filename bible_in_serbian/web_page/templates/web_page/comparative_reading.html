@@ -23,6 +23,12 @@
         </select>
     </div>
 
+    <!-- Add checkbox for showing entire chapter -->
+    <div>
+        <label for="showChapter">
+            <input type="checkbox" id="showChapter">
+        </label></div>
+
     <div class="search-container">
         <input type="text" id="searchBar" placeholder="Претрага стихова">
         <!-- Add "i" button with tooltip -->
@@ -65,6 +71,13 @@
     // Add event listener for search bar
     document.getElementById('searchBar').addEventListener('input', function() {
         const searchText = this.value.toLowerCase();
+        filterVerses('verses1', searchText);
+        filterVerses('verses2', searchText);
+    });
+
+    // Add event listener for the checkbox
+    document.getElementById('showChapter').addEventListener('change', function() {
+        const searchText = document.getElementById('searchBar').value.toLowerCase();
         filterVerses('verses1', searchText);
         filterVerses('verses2', searchText);
     });
@@ -124,6 +137,7 @@
     function filterVerses(targetDivId, searchText) {
         const verses = document.querySelectorAll(`#${targetDivId} .verse`);
         const searchTerms = searchText.toLowerCase().split(/\s+/); // Split search text into terms
+        const showChapter = document.getElementById('showChapter').checked;
 
         // Helper function to check if a verse matches the search terms
         function matchesSearch(verseText, terms) {
@@ -156,16 +170,35 @@
             return result;
         }
 
+        // Get all chapters in the current container
+        const chapters = new Set();
+        verses.forEach(verse => {
+            const chapter = verse.getAttribute('data-chapter');
+            chapters.add(chapter);
+        });
+
         // Filter verses
         verses.forEach(verse => {
             const verseText = verse.textContent.toLowerCase();
+            const chapter = verse.getAttribute('data-chapter');
 
             if (matchesSearch(verseText, searchTerms)) {
-                // Show verses that match the search
-                verse.style.display = '';
+                if (showChapter) {
+                    // Show all verses in the matching chapter
+                    verses.forEach(v => {
+                        if (v.getAttribute('data-chapter') === chapter) {
+                            v.style.display = '';
+                        }
+                    });
+                } else {
+                    // Show only the matching verse
+                    verse.style.display = '';
+                }
             } else {
-                // Hide verses that don't match
-                verse.style.display = 'none';
+                if (!showChapter) {
+                    // Hide non-matching verses when checkbox is unchecked
+                    verse.style.display = 'none';
+                }
             }
         });
     }

@@ -1,6 +1,23 @@
 // Declare csrfToken at the top of the script
 const csrfToken = getCookie('csrftoken');
 
+// Function to highlight the selected text
+function highlightSelectedText() {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0 && !selection.isCollapsed) {
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.className = 'highlight';
+        range.surroundContents(span);
+        selection.removeAllRanges(); // Clear the selection after highlighting
+    }
+}
+
+// Add event listener for text selection
+document.addEventListener('mouseup', function() {
+    highlightSelectedText();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get the book ID from the data attribute
     const bookData = document.getElementById('book-data');
@@ -32,6 +49,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error('Element with id "showChapter" not found.');
+    }
+
+    // Event listeners for Page 1
+    const bookIdPage1 = "{{ book.id }}";
+    if (bookIdPage1) {
+        fetchVerses(bookIdPage1, 'verses');
+    }
+
+    // Event listeners for Page 2
+    const book1Dropdown = document.getElementById('book1');
+    const book2Dropdown = document.getElementById('book2');
+
+    if (book1Dropdown) {
+        book1Dropdown.addEventListener('change', function() {
+            const bookId = this.value;
+            if (bookId) {
+                fetchVerses(bookId, 'verses1');
+            } else {
+                document.getElementById('verses1').innerHTML = '';
+            }
+        });
+    }
+
+    if (book2Dropdown) {
+        book2Dropdown.addEventListener('change', function() {
+            const bookId = this.value;
+            if (bookId) {
+                fetchVerses(bookId, 'verses2');
+            } else {
+                document.getElementById('verses2').innerHTML = '';
+            }
+        });
+    }
+
+    // Event listener for search bar on Page 2
+    const searchBarPage2 = document.getElementById('searchBar');
+    if (searchBarPage2) {
+        searchBarPage2.addEventListener('input', function() {
+            const searchText = this.value.toLowerCase();
+            filterVerses('verses1', searchText);
+            filterVerses('verses2', searchText);
+        });
+    }
+
+    // Event listener for the checkbox on Page 2
+    const showChapterCheckboxPage2 = document.getElementById('showChapter');
+    if (showChapterCheckboxPage2) {
+        showChapterCheckboxPage2.addEventListener('change', function() {
+            const searchText = document.getElementById('searchBar').value.toLowerCase();
+            filterVerses('verses1', searchText);
+            filterVerses('verses2', searchText);
+        });
     }
 });
 
@@ -85,8 +154,6 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-// Rest of your JavaScript code (filterVerses, etc.)
 
 // Filter verses based on search text
 function filterVerses(targetDivId, searchText) {
@@ -163,54 +230,3 @@ function filterVerses(targetDivId, searchText) {
         }
     });
 }
-
-// Event listeners for Page 1
-document.addEventListener('DOMContentLoaded', function() {
-    const bookId = "{{ book.id }}";
-    if (bookId) {
-        fetchVerses(bookId, 'verses');
-    }
-
-    document.getElementById('searchBar').addEventListener('input', function() {
-        const searchText = this.value.toLowerCase();
-        filterVerses('verses', searchText);
-    });
-
-    document.getElementById('showChapter').addEventListener('change', function() {
-        const searchText = document.getElementById('searchBar').value.toLowerCase();
-        filterVerses('verses', searchText);
-    });
-});
-
-// Event listeners for Page 2
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('book1').addEventListener('change', function() {
-        const bookId = this.value;
-        if (bookId) {
-            fetchVerses(bookId, 'verses1');
-        } else {
-            document.getElementById('verses1').innerHTML = '';
-        }
-    });
-
-    document.getElementById('book2').addEventListener('change', function() {
-        const bookId = this.value;
-        if (bookId) {
-            fetchVerses(bookId, 'verses2');
-        } else {
-            document.getElementById('verses2').innerHTML = '';
-        }
-    });
-
-    document.getElementById('searchBar').addEventListener('input', function() {
-        const searchText = this.value.toLowerCase();
-        filterVerses('verses1', searchText);
-        filterVerses('verses2', searchText);
-    });
-
-    document.getElementById('showChapter').addEventListener('change', function() {
-        const searchText = document.getElementById('searchBar').value.toLowerCase();
-        filterVerses('verses1', searchText);
-        filterVerses('verses2', searchText);
-    });
-});

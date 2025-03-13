@@ -1,197 +1,40 @@
 {% extends "web_page/layout.html" %}
+{% load static %}
 
 {% block body %}
 <h2 class="my-4" id="bookTitle">{{ book.title }}</h2>
 
+<!-- Add a hidden element to store the book ID -->
+<div id="book-data" data-book-id="{{ book.id }}"></div>
+
 <div class="controls">
     <!-- Add checkbox for showing entire chapter -->
     <div class="search-and-checkbox">
-    <div>
-        <label for="showChapter">
-            <input type="checkbox" id="showChapter">
-        </label>
+        <div>
+            <label for="showChapter">
+                <input type="checkbox" id="showChapter">
+            </label>
+        </div>
     </div>
-</div>
 
-<div class="search-container">
-    <input type="text" id="searchBar" placeholder="Претрага стихова">
-    <!-- Add "i" button with tooltip -->
-    <button id="searchInfo" class="info-button" aria-label="Search Help">i</button>
-    <div id="searchTooltip" class="tooltip">
-        <strong>Оператори претраге:</strong><br>
-        - Користи <code>&</code> за И (нпр., <code>фарисеј&садукеј</code>).<br>
-        - Користи <code>|</code> за ИЛИ (нпр., <code>фарисеј|садукеј</code>).<br>
-        - Користи <code>!</code> за НЕ (нпр., <code>!фарисеј</code>).<br>
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Претрага стихова">
+        <!-- Add "i" button with tooltip -->
+        <button id="searchInfo" class="info-button" aria-label="Search Help">i</button>
+        <div id="searchTooltip" class="tooltip">
+            <strong>Оператори претраге:</strong><br>
+            - Користи <code>&</code> за И (нпр., <code>фарисеј&садукеј</code>).<br>
+            - Користи <code>|</code> за ИЛИ (нпр., <code>фарисеј|садукеј</code>).<br>
+            - Користи <code>!</code> за НЕ (нпр., <code>!фарисеј</code>).<br>
+        </div>
     </div>
-</div>
 </div>
 
 <div class="verses-container">
     <div id="verses"></div>
 </div>
 
-<!-- JavaScript -->
-<script>
-    // Add event listener for search bar
-    document.getElementById('searchBar').addEventListener('input', function() {
-        const searchText = this.value.toLowerCase();
-        filterVerses('verses', searchText);
-    });
-
-    // Add event listener for the checkbox
-    document.getElementById('showChapter').addEventListener('change', function() {
-        const searchText = document.getElementById('searchBar').value.toLowerCase();
-        filterVerses('verses', searchText);
-    });
-
-    // Fetch verses from the server
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    const csrfToken = getCookie('csrftoken');
-
-    function fetchVerses(bookId, targetDivId) {
-        fetch(`/fetch/${bookId}/`, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const versesHtml = data.verses.map(verse => {
-                if (verse.verse_number === 0) {
-                    // Format for heading verses
-                    return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
-                                <strong>${verse.chapter}</strong> <em>${verse.verse}</em>
-                            </div>`;
-                } else {
-                    // Format for regular verses
-                    return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
-                                <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
-                            </div>`;
-                }
-            }).join('');
-            document.getElementById(targetDivId).innerHTML = versesHtml;
-        })
-        .catch(error => {
-            console.error('Error fetching verses:', error);
-            document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
-        });
-    }
-
-    function filterVerses(targetDivId, searchText) {
-        const verses = document.querySelectorAll(`#${targetDivId} .verse`);
-        const searchTerms = searchText.toLowerCase().split(/\s+/); // Split search text into terms
-        const showChapter = document.getElementById('showChapter').checked; // Get the checkbox state
-
-        // Helper function to check if a verse matches the search terms
-        function matchesSearch(verseText, terms) {
-            let result = true;
-            terms.forEach(term => {
-                if (term.startsWith('!')) {
-                    // NOT operator: term should NOT be present
-                    if (verseText.includes(term.slice(1))) {
-                        result = false;
-                    }
-                } else if (term.includes('&')) {
-                    // AND operator: all sub-terms must be present
-                    const subTerms = term.split('&');
-                    if (!subTerms.every(subTerm => verseText.includes(subTerm))) {
-                        result = false;
-                    }
-                } else if (term.includes('|')) {
-                    // OR operator: at least one sub-term must be present
-                    const subTerms = term.split('|');
-                    if (!subTerms.some(subTerm => verseText.includes(subTerm))) {
-                        result = false;
-                    }
-                } else {
-                    // Default: term must be present
-                    if (!verseText.includes(term)) {
-                        result = false;
-                    }
-                }
-            });
-            return result;
-        }
-
-        // Get all chapters in the current container
-        const chapters = new Set();
-        const matchingChapters = new Set();
-
-        verses.forEach(verse => {
-            const chapter = verse.getAttribute('data-chapter');
-            const verseText = verse.textContent.toLowerCase();
-
-            if (matchesSearch(verseText, searchTerms)) {
-                matchingChapters.add(chapter); // Mark the chapter as containing a match
-            }
-
-            chapters.add(chapter); // Add all chapters to the set
-        });
-
-        // Filter verses
-        verses.forEach(verse => {
-            const chapter = verse.getAttribute('data-chapter');
-            const verseText = verse.textContent.toLowerCase();
-            const matches = matchesSearch(verseText, searchTerms);
-
-            if (showChapter) {
-                // If showChapter is checked, show all verses in the matching chapter
-                if (matchingChapters.has(chapter)) {
-                    verse.style.display = '';
-                } else {
-                    verse.style.display = 'none';
-                }
-            } else {
-                // Show only the matching verse when checkbox is unchecked
-                if (matches) {
-                    verse.style.display = '';
-                } else {
-                    verse.style.display = 'none';
-                }
-            }
-        });
-    }
-
-    // Preload the book from the URL
-    window.onload = function() {
-        const bookId = "{{ book.id }}";
-        if (bookId) {
-            fetchVerses(bookId, 'verses');
-        }
-    };
-</script>
-
-<!-- CSS for search bar width -->
-<style>
- .search-and-checkbox {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Space between checkbox and search bar */
-    }
-
-    .search-container {
-        width: 100%;
-        max-width: 100%; /* Ensure it spans the full width */
-    }
-</style>
+<!-- Link to the external JavaScript file -->
+<script src="{% static 'web_page/scripts.js' %}"></script>
 
 {% endblock %}

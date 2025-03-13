@@ -1,11 +1,26 @@
-/* General body styling */
+/* ==================== */
+/* General Styles       */
+/* ==================== */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f8f9fa;
     color: #333;
 }
 
-/* Navbar styling */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+/* ==================== */
+/* Navbar Styles        */
+/* ==================== */
 .navbar {
     background-color: #343a40;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,20 +42,9 @@ body {
     color: #ffc107 !important;
 }
 
-/* Container styling */
-.container {
-    margin-top: 30px;
-}
-
-/* Heading styling */
-h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #343a40;
-    margin-bottom: 20px;
-}
-
-/* Footer styling */
+/* ==================== */
+/* Footer Styles        */
+/* ==================== */
 .footer {
     background-color: #343a40;
     color: #fff;
@@ -58,7 +62,9 @@ h1 {
     text-decoration: underline;
 }
 
-/* Dropdown and search bar container */
+/* ==================== */
+/* Controls (Dropdown & Search) */
+/* ==================== */
 .controls {
     display: flex;
     gap: 20px;
@@ -66,7 +72,7 @@ h1 {
     align-items: center;
 }
 
-/* Dropdown styling */
+/* Dropdown Styles */
 select {
     padding: 10px;
     border: 2px solid #ffc107;
@@ -89,7 +95,7 @@ select:focus {
     box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
 }
 
-/* Search bar styling */
+/* Search Bar Styles */
 .search-container {
     flex: 1;
     position: relative;
@@ -118,10 +124,10 @@ select:focus {
     box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
 }
 
-/* Info button styling */
+/* Info Button Styles */
 .info-button {
     margin-left: 10px;
-    background-color: #ffc107;
+    background-color: #343a40;
     color: white;
     border: none;
     border-radius: 50%;
@@ -135,10 +141,10 @@ select:focus {
 }
 
 .info-button:hover {
-    background-color: #0056b3;
+    background-color: #ffc107;
 }
 
-/* Tooltip styling */
+/* Tooltip Styles */
 .tooltip {
     visibility: hidden;
     width: 250px;
@@ -168,11 +174,22 @@ select:focus {
     font-family: monospace;
 }
 
-/* Verses container styling */
+/* ==================== */
+/* Verses Container     */
+/* ==================== */
 .verses-container {
     display: flex;
     gap: 20px;
-    height: 80vh; /* Adjust the height as needed */
+    height: 80vh;
+    overflow: hidden; 
+}
+
+#verses {
+    flex: 1;
+    overflow-y: auto; 
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 100%;
 }
 
 .verses-container div {
@@ -192,7 +209,9 @@ select:focus {
     height: 100%;
 }
 
-/* Verse styling */
+/* ==================== */
+/* Verse Styles         */
+/* ==================== */
 .verse {
     margin-bottom: 10px;
     padding: 10px;
@@ -203,7 +222,7 @@ select:focus {
     color: #007bff;
 }
 
-/* Highlight styling */
+/* Highlight Styles */
 .highlight {
     background-color: #ffc107;
     font-weight: bold;

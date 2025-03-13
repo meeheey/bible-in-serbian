@@ -1,15 +1,22 @@
 // Declare csrfToken at the top of the script
 const csrfToken = getCookie('csrftoken');
 
-// Function to highlight the selected text
+// Function to highlight the selected text within a verse
 function highlightSelectedText() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
         const range = selection.getRangeAt(0);
-        const span = document.createElement('span');
-        span.className = 'highlight';
-        range.surroundContents(span);
-        selection.removeAllRanges(); // Clear the selection after highlighting
+        
+        // Find the parent .verse element of the selected range
+        const selectedElement = range.startContainer.closest('.verse');
+        
+        // If the selection is inside a .verse element, apply the highlight
+        if (selectedElement) {
+            const span = document.createElement('span');
+            span.className = 'highlight';
+            range.surroundContents(span); // Highlight the selected content
+            selection.removeAllRanges(); // Clear the selection after highlighting
+        }
     }
 }
 

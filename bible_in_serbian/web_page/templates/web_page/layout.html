@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'web_page/css/styles.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark unselectable">
         <div class="container">
             <a class="navbar-brand" href="{% url 'index' %}">📖 Свето писмо</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@
     </div>
 
     <footer class="footer">
-        <div class="container">
+        <div class="container unselectable">
             <p>&copy; 2025 Свето писмо. All rights reserved.</p>
             <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
         </div>

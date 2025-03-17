@@ -1,22 +1,37 @@
 // Declare csrfToken at the top of the script
 const csrfToken = getCookie('csrftoken');
 
-// Function to highlight the selected text within a verse
+// Function to highlight the selected text
 function highlightSelectedText() {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
         const range = selection.getRangeAt(0);
-        
-        // Find the parent .verse element of the selected range
-        const selectedElement = range.startContainer.closest('.verse');
-        
-        // If the selection is inside a .verse element, apply the highlight
-        if (selectedElement) {
+
+        // Check if the selection contains any highlighted text
+        const containsHighlight = Array.from(range.cloneContents().querySelectorAll('.highlight')).length > 0;
+
+        if (containsHighlight) {
+            // If the selection contains highlighted text, remove the highlight from the entire selection
+            const span = document.createElement('span');
+            span.appendChild(range.extractContents());
+            range.insertNode(span);
+
+            // Remove the highlight class from all elements within the span
+            span.querySelectorAll('.highlight').forEach(highlightedElement => {
+                const textNode = document.createTextNode(highlightedElement.textContent);
+                highlightedElement.parentNode.replaceChild(textNode, highlightedElement);
+            });
+
+            // Normalize the text nodes to merge adjacent text nodes
+            span.parentNode.normalize();
+        } else {
+            // If the selection does not contain highlighted text, add a new highlight
             const span = document.createElement('span');
             span.className = 'highlight';
-            range.surroundContents(span); // Highlight the selected content
-            selection.removeAllRanges(); // Clear the selection after highlighting
+            range.surroundContents(span);
         }
+
+        selection.removeAllRanges(); // Clear the selection after highlighting
     }
 }
 

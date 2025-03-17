@@ -2,10 +2,10 @@
 {% load static %}
 
 {% block body %}
-<h2 class="my-4">Упоредно читање</h2>
+<h2 class="my-4 unselectable">Упоредно читање</h2>
 <div class="controls">
     <div>
-        <label for="book1">Књ. 1:</label>
+        <label for="book1" class="unselectable">Књ. 1:</label>
         <select id="book1">
             <option value="">--Одабери књигу--</option>
             {% for book in books %}
@@ -15,7 +15,7 @@
     </div>
 
     <div>
-        <label for="book2">Књ. 2:</label>
+        <label for="book2" class="unselectable">Књ. 2:</label>
         <select id="book2">
             <option value="">--Одабери књигу--</option>
             {% for book in books %}

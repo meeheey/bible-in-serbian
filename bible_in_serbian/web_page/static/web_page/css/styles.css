@@ -19,10 +19,10 @@ h1 {
 }
 
 .unselectable {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
-    user-select: none; /* Standard syntax */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* ==================== */
@@ -118,6 +118,29 @@ h1 {
 }
 
 .btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border: 2px solid #343a40;
+    color: #343a40;
+    padding: 5px 10px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ffc107;
+    color: #343a40;
+    border-color: #ffc107;
+}
+
+.btn-outline-primary:focus {
     outline: none;
     box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
 }
@@ -243,7 +266,7 @@ select:focus {
     position: absolute;
     z-index: 1;
     top: 100%;
-    left: 50%;
+    left: 100%;
     transform: translateX(-50%);
     opacity: 0;
     transition: opacity 0.3s;

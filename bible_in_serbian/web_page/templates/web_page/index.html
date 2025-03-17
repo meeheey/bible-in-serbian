@@ -19,7 +19,7 @@
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ book.acronym }}</td>
                     <td>{{ book.title }}</td>
-                    <td><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-outline-primary">📖</a></td>          
+                    <td><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-outline-primary"><i class='fas fa-book'></i></a></td>          
                 </tr>
                 {% endfor %}
             </tbody>

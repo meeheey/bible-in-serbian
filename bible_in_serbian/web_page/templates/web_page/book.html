@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block body %}
-<h2 class="my-4" id="bookTitle">{{ book.title }}</h2>
+<h2 class="my-4 unselectable" id="bookTitle">{{ book.title }}</h2>
 
 <!-- Add a hidden element to store the book ID -->
 <div id="book-data" data-book-id="{{ book.id }}"></div>

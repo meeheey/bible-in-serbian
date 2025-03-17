@@ -70,6 +70,86 @@ h1 {
 }
 
 /* ==================== */
+/* Form Styles           */
+/* ==================== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    padding: 10px;
+    border: 2px solid #ffc107;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #ffc107;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.form-control:hover {
+    border-color: #e0a800;
+}
+
+/* ==================== */
+/* Button Styles         */
+/* ==================== */
+.btn-primary {
+    background-color: #ffc107;
+    border: none;
+    color: #343a40;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+.btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* ==================== */
+/* Link Styles           */
+/* ==================== */
+a {
+    color: #ffc107;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #e0a800;
+    text-decoration: underline;
+}
+
+/* ==================== */
+/* Message Styles        */
+/* ==================== */
+.message {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffc107;
+    color: #343a40;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* ==================== */
 /* Controls (Dropdown & Search) */
 /* ==================== */
 .controls {

@@ -6,4 +6,6 @@ from . import views
 
 urlpatterns = [
     path('<int:book_id>/', views.fetch_book, name='fetch_book'),
+    path('save_comment/', views.save_comment, name='save_comment'),
+    path('<int:book_id>/comments/', views.fetch_comments, name='fetch_comments'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

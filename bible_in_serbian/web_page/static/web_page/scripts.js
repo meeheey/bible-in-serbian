@@ -154,10 +154,43 @@ function fetchVerses(bookId, targetDivId) {
             }
         }).join('');
         document.getElementById(targetDivId).innerHTML = versesHtml;
+
+        // Fetch comments for the book
+        fetchComments(bookId, targetDivId);
     })
     .catch(error => {
         console.error('Error fetching verses:', error);
         document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
+    });
+}
+
+function fetchComments(bookId, targetDivId) {
+    fetch(`/fetch/${bookId}/comments/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.comments && data.comments.length > 0) {
+            data.comments.forEach(comment => {
+                const verseElement = document.querySelector(`#${targetDivId} .verse[data-chapter="${comment.chapter}"][data-verse-number="${comment.verse_number}"]`);
+                if (verseElement) {
+                    const commentIcon = document.createElement('i');
+                    commentIcon.className = 'fas fa-comment';
+                    commentIcon.title = `${comment.comment}\nCreated on: ${comment.creation_date}`;
+                    verseElement.appendChild(commentIcon);
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching comments:', error);
     });
 }
 

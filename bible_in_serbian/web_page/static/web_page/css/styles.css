@@ -339,3 +339,10 @@ select:focus {
     padding: 2px 4px;
     border-radius: 3px;
 }
+
+/*Comment Styles */
+.fas.fa-comment {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #007bff;
+}

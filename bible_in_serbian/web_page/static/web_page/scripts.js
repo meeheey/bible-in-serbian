@@ -1,45 +1,6 @@
 // Declare csrfToken at the top of the script
 const csrfToken = getCookie('csrftoken');
 
-// Function to highlight the selected text
-function highlightSelectedText() {
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0 && !selection.isCollapsed) {
-        const range = selection.getRangeAt(0);
-
-        // Check if the selection contains any highlighted text
-        const containsHighlight = Array.from(range.cloneContents().querySelectorAll('.highlight')).length > 0;
-
-        if (containsHighlight) {
-            // If the selection contains highlighted text, remove the highlight from the entire selection
-            const span = document.createElement('span');
-            span.appendChild(range.extractContents());
-            range.insertNode(span);
-
-            // Remove the highlight class from all elements within the span
-            span.querySelectorAll('.highlight').forEach(highlightedElement => {
-                const textNode = document.createTextNode(highlightedElement.textContent);
-                highlightedElement.parentNode.replaceChild(textNode, highlightedElement);
-            });
-
-            // Normalize the text nodes to merge adjacent text nodes
-            span.parentNode.normalize();
-        } else {
-            // If the selection does not contain highlighted text, add a new highlight
-            const span = document.createElement('span');
-            span.className = 'highlight';
-            range.surroundContents(span);
-        }
-
-        selection.removeAllRanges(); // Clear the selection after highlighting
-    }
-}
-
-// Add event listener for text selection
-document.addEventListener('mouseup', function() {
-    highlightSelectedText();
-});
-
 document.addEventListener('DOMContentLoaded', function() {
     // Get the book ID from the data attribute
     const bookData = document.getElementById('book-data');
@@ -143,12 +104,12 @@ function fetchVerses(bookId, targetDivId) {
         const versesHtml = data.verses.map(verse => {
             if (verse.verse_number === 0) {
                 // Format for heading verses
-                return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                return `<div class="verse" data-book-id="${bookId}" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
                             <strong>${verse.chapter}</strong> <em>${verse.verse}</em>
                         </div>`;
             } else {
                 // Format for regular verses
-                return `<div class="verse" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
+                return `<div class="verse" data-book-id="${bookId}" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
                             <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
                         </div>`;
             }

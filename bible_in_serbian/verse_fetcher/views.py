@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+import json
+
 from .models import Books, Verses
 from web_page.models import User, Comment
 
@@ -22,11 +24,14 @@ def save_comment(request):
     A Django view to save a comment for a specific verse.
     """
     try:
-        # Extract data from the request
-        book_id = request.POST.get('book_id')
-        chapter = request.POST.get('chapter')
-        verse_number = request.POST.get('verse_number')
-        comment_text = request.POST.get('comment')
+        # Parse JSON data from the request body
+        data = json.loads(request.body)
+
+        # Extract data
+        book_id = data.get('book_id')
+        chapter = data.get('chapter')
+        verse_number = data.get('verse_number')
+        comment_text = data.get('comment')
 
         # Validate required fields
         if not all([book_id, chapter, verse_number, comment_text]):

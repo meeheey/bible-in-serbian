@@ -332,6 +332,13 @@ select:focus {
     color: #007bff;
 }
 
+.selected {
+    border: 2px solid #ffc107 !important; /* Force the border to apply */
+    padding: 2px; /* Optional: Adds padding around the content for better visual */
+    box-sizing: border-box; /* Ensures padding is included in element size */
+}
+
+
 /* Highlight Styles */
 .highlight {
     background-color: #ffc107;
@@ -345,4 +352,73 @@ select:focus {
     margin-left: 5px;
     cursor: pointer;
     color: #007bff;
+}
+
+/* ==================== */
+/* Floating Box Styles   */
+/* ==================== */
+#floating-box {
+    position: absolute;
+    width: 220px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: move;
+    font-family: 'Roboto', sans-serif;
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+#floating-box #header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* ==================== */
+/* Floating Box Buttons  */
+/* ==================== */
+#floating-box button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin: 8px 0;
+    background-color: #ffc107;
+    border: none;
+    border-radius: 5px;
+    color: #343a40;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#floating-box button:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+#floating-box button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* Specific button styles for consistency */
+#floating-box #highlight {
+    background-color: #ffc107;
+}
+
+#floating-box #comment {
+    background-color: #ffc107;
+}
+
+#floating-box #quote {
+    background-color: #ffc107;
+}
+
+#floating-box #bookmark {
+    background-color: #ffc107;
 }

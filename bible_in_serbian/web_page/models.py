@@ -28,3 +28,22 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'({self.book.acronym} {self.verse.chapter}:{self.verse.verse_number}) {self.comment}'
+
+class Bookmark(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookmarks_authored')
+    book = models.ForeignKey('verse_fetcher.Books', on_delete=models.CASCADE, related_name='book_bookmarks')
+    verse = models.ForeignKey('verse_fetcher.Verses', on_delete=models.CASCADE, related_name='verse_bookmarks')
+    creation_date = models.DateTimeField(default=timezone.now, editable=False)
+
+    class Meta:
+        verbose_name = 'Bookmark'
+        verbose_name_plural = 'Bookmarks'
+        unique_together = ('author', 'verse')
+        indexes = [
+            models.Index(fields=['author']),
+            models.Index(fields=['book']),
+            models.Index(fields=['verse']),
+        ]
+
+    def __str__(self):
+        return f'Означено: ({self.book.acronym} {self.verse.chapter}:{self.verse.verse_number})'

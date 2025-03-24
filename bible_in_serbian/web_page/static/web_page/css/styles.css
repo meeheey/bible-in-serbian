@@ -332,12 +332,12 @@ select:focus {
     color: #007bff;
 }
 
-.selected {
-    border: 2px solid #ffc107 !important; /* Force the border to apply */
-    padding: 2px; /* Optional: Adds padding around the content for better visual */
-    box-sizing: border-box; /* Ensures padding is included in element size */
-}
 
+.selected {
+    border: 2px solid #007bff !important; 
+    padding: 2px;
+    box-sizing: border-box;
+}
 
 /* Highlight Styles */
 .highlight {
@@ -349,6 +349,13 @@ select:focus {
 
 /*Comment Styles */
 .fas.fa-comment {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+/*Bookmark Styles */
+.fas.fa-bookmark {
     margin-left: 5px;
     cursor: pointer;
     color: #007bff;
@@ -381,6 +388,7 @@ select:focus {
 /* ==================== */
 /* Floating Box Buttons  */
 /* ==================== */
+
 #floating-box button {
     display: block;
     width: 100%;
@@ -421,4 +429,10 @@ select:focus {
 
 #floating-box #bookmark {
     background-color: #ffc107;
+}
+
+#comment-text {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    padding-right: 10px;    /* Adds padding to the right */
 }

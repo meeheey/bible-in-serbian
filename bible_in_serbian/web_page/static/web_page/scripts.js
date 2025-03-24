@@ -118,6 +118,7 @@ function fetchVerses(bookId, targetDivId) {
 
         // Fetch comments for the book
         fetchComments(bookId, targetDivId);
+        fetchBookmarks (bookId, targetDivId);
     })
     .catch(error => {
         console.error('Error fetching verses:', error);
@@ -152,6 +153,36 @@ function fetchComments(bookId, targetDivId) {
     })
     .catch(error => {
         console.error('Error fetching comments:', error);
+    });
+}
+
+function fetchBookmarks(bookId, targetDivId) {
+    fetch(`/fetch/${bookId}/bookmarks/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.bookmarks && data.bookmarks.length > 0) {
+            data.bookmarks.forEach(bookmark => {
+                const verseElement = document.querySelector(`#${targetDivId} .verse[data-chapter="${bookmark.chapter}"][data-verse-number="${bookmark.verse_number}"]`);
+                if (verseElement) {
+                    const bookmarkIcon = document.createElement('i');
+                    bookmarkIcon.className = 'fas fa-bookmark';
+                    bookmarkIcon.title = `Created on: ${bookmark.creation_date}`;
+                    verseElement.appendChild(bookmarkIcon);
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching bookmarks:', error);
     });
 }
 

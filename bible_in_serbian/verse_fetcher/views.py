@@ -265,7 +265,7 @@ def save_bookmark(request):
         return JsonResponse({
             'status': 'success',
             'message': 'Bookmark saved successfully.',
-            'comment_id': bookmark.id,
+            'bookmark_id': bookmark.id,
         }, status=201)
 
     except ValidationError as e:
@@ -277,7 +277,7 @@ def save_bookmark(request):
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'message': 'An error occurred while saving the comment.',
+            'message': 'An error occurred while saving the bookmark.',
         }, status=500)
 
 @login_required

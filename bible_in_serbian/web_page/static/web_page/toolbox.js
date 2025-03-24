@@ -9,6 +9,7 @@ let isDragging = false;
 let offsetX, offsetY;
 let isHighlightActive = false; // State variable to track highlight functionality
 let isCommentActive = false; // State variable to track comment functionality
+let isBookmarkActive = false; // State variable to track bookmark functionality
 
 box.addEventListener('mousedown', (e) => {
     isDragging = true;
@@ -48,8 +49,12 @@ document.getElementById('quote').addEventListener('click', () => {
     alert('Quote action triggered');
 });
 
+// Update the bookmark button click handler
 document.getElementById('bookmark').addEventListener('click', () => {
-    alert('Bookmark action triggered');
+    isBookmarkActive = !isBookmarkActive; // Toggle bookmark functionality
+    if (isBookmarkActive) {
+        saveBookmark();
+    }
 });
 
 // Function to highlight the selected text
@@ -108,8 +113,12 @@ document.getElementById('quote').addEventListener('click', () => {
     alert('Quote action triggered');
 });
 
+// Update the bookmark button click handler
 document.getElementById('bookmark').addEventListener('click', () => {
-    alert('Bookmark action triggered');
+    isBookmarkActive = !isBookmarkActive; // Toggle bookmark functionality
+    if (isBookmarkActive) {
+        saveBookmark();
+    }
 });
 
 // Function to transform the floating box into a comment form
@@ -277,3 +286,50 @@ document.addEventListener('click', function (event) {
         verseElement.classList.add('selected');
     }
 });
+
+// Function to save the bookmark
+function saveBookmark() {
+    // Get the selected verse
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        alert('Молимо изаберите стих пре него што сачувате обележивач.');
+        isBookmarkActive = false;
+        return;
+    }
+
+    // Prepare data for the AJAX request
+    const data = {
+        book_id: selectedVerse.bookId,
+        chapter: selectedVerse.chapter,
+        verse_number: selectedVerse.verseNumber,
+    };
+
+    // Send the AJAX request
+    fetch('/fetch/save_bookmark/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token for Django
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json(); // Parse the response as JSON
+    })
+    .then((data) => {
+        if (data.status === 'success') {
+            alert('Обележивач је успешно сачуван.');
+        } else {
+            alert(`Грешка: ${data.message}`);
+        }
+        isBookmarkActive = false;
+    })
+    .catch((error) => {
+        console.error('Грешка:', error);
+        alert('Дошло је до грешке приликом чувања обележивача.');
+        isBookmarkActive = false;
+    });
+}

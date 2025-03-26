@@ -10,5 +10,6 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path('books/<int:book_id>/', views.show_book, name='show_book'),
-    path('comparative_reading/', views.comparative_reading, name='comparative reading')
+    path('comparative_reading/', views.comparative_reading, name='comparative reading'),
+    path('comment/<comment_id>/', views.view_comment, name="view_comment")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

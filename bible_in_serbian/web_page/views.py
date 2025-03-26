@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
-from .models import User
+from .models import User, Comment, Bookmark
 from verse_fetcher.models import Books, Verses
 
 
@@ -78,4 +78,10 @@ def comparative_reading(request):
     books = Books.objects.all()
     return render(request, "web_page/comparative_reading.html", {
         "books": books
+    })
+
+def view_comment(request, comment_id):
+    comment = Comment.objects.get(id=comment_id)
+    return render(request, "web_page/comment.html",{
+        "comment": comment
     })

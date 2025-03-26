@@ -1,3 +1,14 @@
+import { 
+    getCookie, 
+    fetchComments, 
+    fetchBookmarks, 
+    getSelectedVerse, 
+    getTargetDivIdForVerse, 
+    refetchVerseAnnotations 
+} from './utils.js';
+
+// Rest of your scripts.js code remains the same, just remove the moved functions
+
 // Declare csrfToken at the top of the script
 const csrfToken = getCookie('csrftoken');
 
@@ -85,6 +96,20 @@ document.addEventListener('DOMContentLoaded', function() {
             filterVerses('verses2', searchText);
         });
     }
+
+    // Add event listener for verse selection
+    document.addEventListener('click', function(event) {
+        const clickedElement = event.target;
+        const verseElement = clickedElement.closest('.verse');
+
+        if (verseElement) {
+            // Remove the 'selected' class from all verses
+            document.querySelectorAll('.verse').forEach((verse) => verse.classList.remove('selected'));
+
+            // Add the 'selected' class to the clicked verse
+            verseElement.classList.add('selected');
+        }
+    });
 });
 
 // Fetch verses from the server
@@ -116,9 +141,9 @@ function fetchVerses(bookId, targetDivId) {
         }).join('');
         document.getElementById(targetDivId).innerHTML = versesHtml;
 
-        // Fetch comments for the book
+        // Fetch comments and bookmarks for the book
         fetchComments(bookId, targetDivId);
-        fetchBookmarks (bookId, targetDivId);
+        fetchBookmarks(bookId, targetDivId);
     })
     .catch(error => {
         console.error('Error fetching verses:', error);
@@ -126,111 +151,30 @@ function fetchVerses(bookId, targetDivId) {
     });
 }
 
-function fetchComments(bookId, targetDivId) {
-    fetch(`/fetch/${bookId}/comments/`, {
-        headers: {
-            'X-CSRFToken': csrfToken
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.comments && data.comments.length > 0) {
-            data.comments.forEach(comment => {
-                const verseElement = document.querySelector(`#${targetDivId} .verse[data-chapter="${comment.chapter}"][data-verse-number="${comment.verse_number}"]`);
-                if (verseElement) {
-                    const commentIcon = document.createElement('i');
-                    commentIcon.className = 'fas fa-comment';
-                    commentIcon.title = `${comment.comment}\nCreated on: ${comment.creation_date}`;
-                    verseElement.appendChild(commentIcon);
-                }
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching comments:', error);
-    });
-}
-
-function fetchBookmarks(bookId, targetDivId) {
-    fetch(`/fetch/${bookId}/bookmarks/`, {
-        headers: {
-            'X-CSRFToken': csrfToken
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.bookmarks && data.bookmarks.length > 0) {
-            data.bookmarks.forEach(bookmark => {
-                const verseElement = document.querySelector(`#${targetDivId} .verse[data-chapter="${bookmark.chapter}"][data-verse-number="${bookmark.verse_number}"]`);
-                if (verseElement) {
-                    const bookmarkIcon = document.createElement('i');
-                    bookmarkIcon.className = 'fas fa-bookmark';
-                    bookmarkIcon.title = `Created on: ${bookmark.creation_date}`;
-                    verseElement.appendChild(bookmarkIcon);
-                }
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching bookmarks:', error);
-    });
-}
-
-// Function to get a cookie by name
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
 // Filter verses based on search text
 function filterVerses(targetDivId, searchText) {
     const verses = document.querySelectorAll(`#${targetDivId} .verse`);
-    const searchTerms = searchText.toLowerCase().split(/\s+/); // Split search text into terms
+    const searchTerms = searchText.toLowerCase().split(/\s+/);
     const showChapter = document.getElementById('showChapter').checked;
 
-    // Helper function to check if a verse matches the search terms
     function matchesSearch(verseText, terms) {
         let result = true;
         terms.forEach(term => {
             if (term.startsWith('!')) {
-                // NOT operator: term should NOT be present
                 if (verseText.includes(term.slice(1))) {
                     result = false;
                 }
             } else if (term.includes('&')) {
-                // AND operator: all sub-terms must be present
                 const subTerms = term.split('&');
                 if (!subTerms.every(subTerm => verseText.includes(subTerm))) {
                     result = false;
                 }
             } else if (term.includes('|')) {
-                // OR operator: at least one sub-term must be present
                 const subTerms = term.split('|');
                 if (!subTerms.some(subTerm => verseText.includes(subTerm))) {
                     result = false;
                 }
             } else {
-                // Default: term must be present
                 if (!verseText.includes(term)) {
                     result = false;
                 }
@@ -239,7 +183,6 @@ function filterVerses(targetDivId, searchText) {
         return result;
     }
 
-    // Get all chapters in the current container
     const chapters = new Set();
     const matchingChapters = new Set();
 
@@ -248,32 +191,20 @@ function filterVerses(targetDivId, searchText) {
         const verseText = verse.textContent.toLowerCase();
 
         if (matchesSearch(verseText, searchTerms)) {
-            matchingChapters.add(chapter); // Mark the chapter as containing a match
+            matchingChapters.add(chapter);
         }
-
-        chapters.add(chapter); // Add all chapters to the set
+        chapters.add(chapter);
     });
 
-    // Filter verses
     verses.forEach(verse => {
         const chapter = verse.getAttribute('data-chapter');
         const verseText = verse.textContent.toLowerCase();
         const matches = matchesSearch(verseText, searchTerms);
 
         if (showChapter) {
-            // If showChapter is checked, show all verses in the matching chapter
-            if (matchingChapters.has(chapter)) {
-                verse.style.display = '';
-            } else {
-                verse.style.display = 'none';
-            }
+            verse.style.display = matchingChapters.has(chapter) ? '' : 'none';
         } else {
-            // Show only the matching verse when checkbox is unchecked
-            if (matches) {
-                verse.style.display = '';
-            } else {
-                verse.style.display = 'none';
-            }
+            verse.style.display = matches ? '' : 'none';
         }
     });
 }

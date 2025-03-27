@@ -219,6 +219,8 @@ function saveComment() {
     });
 }
 
+// In toolbox.js - Update both functions:
+
 // Function to save a bookmark
 function saveBookmark(selectedVerse) {
     const data = {
@@ -245,8 +247,10 @@ function saveBookmark(selectedVerse) {
         if (data.status === 'success') {
             alert('Обележивач је успешно сачуван.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            refetchVerseAnnotations(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verseNumber, targetDivId);
-            updateBookmarkButton();
+            // Call both functions sequentially
+            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+                .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
+                .then(() => updateBookmarkButton()); // Update button after both fetches complete
         } else {
             alert(`Грешка: ${data.message}`);
         }
@@ -283,8 +287,10 @@ function removeBookmark(selectedVerse) {
         if (data.status === 'success') {
             alert('Обележивач је успешно уклоњен.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            refetchVerseAnnotations(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verseNumber, targetDivId);
-            updateBookmarkButton();
+            // Call both functions sequentially
+            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+                .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
+                .then(() => updateBookmarkButton()); // Update button after both fetches complete
         } else {
             alert(`Грешка: ${data.message}`);
         }

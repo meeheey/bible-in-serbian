@@ -279,6 +279,39 @@ def save_bookmark(request):
             'status': 'error',
             'message': 'An error occurred while saving the bookmark.',
         }, status=500)
+    
+@require_http_methods(["POST"])
+@csrf_exempt
+def delete_bookmark(request):
+    """
+    A Django view to delete a bookmark for a specific verse.
+    """
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        chapter = data.get('chapter')
+        verse_number = data.get('verse_number')
+
+        if not all([book_id, chapter, verse_number]):
+            return HttpResponseBadRequest("Missing required fields.")
+
+        book = get_object_or_404(Books, id=book_id)
+        verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
+
+        # Get and delete the bookmark
+        bookmark = get_object_or_404(Bookmark, author=request.user, book=book, verse=verse)
+        bookmark.delete()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Bookmark deleted successfully.',
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An error occurred while deleting the bookmark.',
+        }, status=500)
 
 @login_required
 def fetch_bookmarks(request, book_id):

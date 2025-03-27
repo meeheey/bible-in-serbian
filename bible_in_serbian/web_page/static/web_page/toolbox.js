@@ -18,7 +18,6 @@ let isDragging = false;
 let offsetX, offsetY;
 let isHighlightActive = false;
 let isCommentActive = false;
-let isBookmarkActive = false;
 
 // Initialize the toolbox
 transformBoxIntoToolbox();
@@ -99,8 +98,11 @@ function transformBoxIntoToolbox() {
         <button id="highlight">Подвуци</button>
         <button id="comment">Коментариши</button>
         <button id="quote">Цитирај</button>
-        <button id="bookmark">Означи</button>
+        <button id="bookmark">Обележи</button>
     `;
+
+    // Update bookmark button based on current verse's bookmark status
+    updateBookmarkButton();
 
     document.getElementById('highlight').addEventListener('click', () => {
         isHighlightActive = !isHighlightActive;
@@ -120,12 +122,50 @@ function transformBoxIntoToolbox() {
         alert('Quote action triggered');
     });
     
-    document.getElementById('bookmark').addEventListener('click', () => {
-        isBookmarkActive = !isBookmarkActive;
-        if (isBookmarkActive) {
-            saveBookmark();
-        }
-    });
+    document.getElementById('bookmark').addEventListener('click', toggleBookmark);
+}
+
+// Function to update bookmark button text based on current verse's status
+function updateBookmarkButton() {
+    const bookmarkBtn = document.getElementById('bookmark');
+    if (!bookmarkBtn) return;
+
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        bookmarkBtn.textContent = 'Обележи';
+        return;
+    }
+
+    // Check if current verse has a bookmark
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
+    );
+
+    if (verseElement) {
+        bookmarkBtn.textContent = 'Уклони обележивач';
+    } else {
+        bookmarkBtn.textContent = 'Обележи';
+    }
+}
+
+// Function to toggle bookmark
+function toggleBookmark() {
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        alert('Молимо изаберите стих пре него што сачувате обележивач.');
+        return;
+    }
+
+    // Check if current verse has a bookmark
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
+    );
+
+    if (verseElement) {
+        removeBookmark(selectedVerse);
+    } else {
+        saveBookmark(selectedVerse);
+    }
 }
 
 // Function to save a comment
@@ -180,14 +220,7 @@ function saveComment() {
 }
 
 // Function to save a bookmark
-function saveBookmark() {
-    const selectedVerse = getSelectedVerse();
-    if (!selectedVerse) {
-        alert('Молимо изаберите стих пре него што сачувате обележивач.');
-        isBookmarkActive = false;
-        return;
-    }
-
+function saveBookmark(selectedVerse) {
     const data = {
         book_id: selectedVerse.bookId,
         chapter: selectedVerse.chapter,
@@ -213,14 +246,68 @@ function saveBookmark() {
             alert('Обележивач је успешно сачуван.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
             refetchVerseAnnotations(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verseNumber, targetDivId);
+            updateBookmarkButton();
         } else {
             alert(`Грешка: ${data.message}`);
         }
-        isBookmarkActive = false;
     })
     .catch((error) => {
         console.error('Грешка:', error);
         alert('Дошло је до грешке приликом чувања обележивача.');
-        isBookmarkActive = false;
     });
 }
+
+// Function to remove a bookmark
+function removeBookmark(selectedVerse) {
+    const data = {
+        book_id: selectedVerse.bookId,
+        chapter: selectedVerse.chapter,
+        verse_number: selectedVerse.verseNumber,
+    };
+
+    fetch('/fetch/delete_bookmark/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then((data) => {
+        if (data.status === 'success') {
+            alert('Обележивач је успешно уклоњен.');
+            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
+            refetchVerseAnnotations(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verseNumber, targetDivId);
+            updateBookmarkButton();
+        } else {
+            alert(`Грешка: ${data.message}`);
+        }
+    })
+    .catch((error) => {
+        console.error('Грешка:', error);
+        alert('Дошло је до грешке приликом уклањања обележивача.');
+    });
+}
+
+// Add event listener for verse selection
+document.addEventListener('click', function(event) {
+    const clickedElement = event.target;
+    const verseElement = clickedElement.closest('.verse');
+
+    if (verseElement) {
+        // Remove the 'selected' class from all verses
+        document.querySelectorAll('.verse').forEach((verse) => verse.classList.remove('selected'));
+
+        // Add the 'selected' class to the clicked verse
+        verseElement.classList.add('selected');
+        
+        // Update bookmark button when verse selection changes
+        updateBookmarkButton();
+    }
+});

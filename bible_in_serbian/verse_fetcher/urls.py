@@ -9,5 +9,6 @@ urlpatterns = [
     path('save_comment/', views.save_comment, name='save_comment'),
     path('<int:book_id>/comments/', views.fetch_comments, name='fetch_comments'),
     path('save_bookmark/', views.save_bookmark, name='save_bookmark'),
+    path('delete_bookmark/', views.delete_bookmark, name='delete_bookmark'),
     path('<int:book_id>/bookmarks/', views.fetch_bookmarks, name='fetch_bookmarks'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -17,67 +17,47 @@ def fetch_book(request, book_id):
     verses_data = [{"book_id": book.id, "chapter": verse.chapter, "verse_number": verse.verse_number, "verse": verse.verse} for verse in verses]
     return JsonResponse({"verses": verses_data})
 
-@require_http_methods(["POST"])  # Restrict this view to POST requests only
-@csrf_exempt  # Disable CSRF for simplicity (not recommended for production)
+# views.py
+@require_http_methods(["POST"])
+@csrf_exempt
 def save_comment(request):
-    """
-    A Django view to save a comment for a specific verse.
-    """
     try:
-        # Parse JSON data from the request body
         data = json.loads(request.body)
-
-        # Extract data
         book_id = data.get('book_id')
         chapter = data.get('chapter')
         verse_number = data.get('verse_number')
         comment_text = data.get('comment')
 
-        # Validate required fields
         if not all([book_id, chapter, verse_number, comment_text]):
-            return HttpResponseBadRequest("Missing required fields.")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Missing required fields.'
+            }, status=400)
 
-        # Convert book_id, chapter, and verse_number to integers
-        try:
-            book_id = int(book_id)
-            chapter = int(chapter)
-            verse_number = int(verse_number)
-        except (TypeError, ValueError):
-            return HttpResponseBadRequest("Invalid input for book_id, chapter, or verse_number.")
-
-        # Validate the comment text
-        if not comment_text.strip():
-            raise ValidationError("Comment text cannot be empty.")
-
-        # Get the book and verse
         book = get_object_or_404(Books, id=book_id)
         verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
 
-        # Create and save the comment
-        comment = Comment.objects.create(
+        # Try to get existing comment or create new one
+        comment, created = Comment.objects.get_or_create(
             author=request.user,
             book=book,
             verse=verse,
-            comment=comment_text
+            defaults={'comment': comment_text}
         )
 
-        # Return a success response
+        if not created:
+            comment.comment = comment_text
+            comment.save()
+
         return JsonResponse({
             'status': 'success',
             'message': 'Comment saved successfully.',
-            'comment_id': comment.id,
-        }, status=201)
-
-    except ValidationError as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e),
-        }, status=400)
+        })
 
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'message': 'An error occurred while saving the comment.',
+            'message': str(e),
         }, status=500)
 
 @login_required
@@ -118,18 +98,16 @@ def fetch_comments(request, book_id):
         return JsonResponse({"comments": comments_data}, safe=False)
 
     except Exception as e:
-        # Handle unexpected errors
+        # Handle unexpected errorssave
         return JsonResponse({"error": str(e)}, status=500)@require_http_methods(["POST"])  # Restrict this view to POST requests only
-@csrf_exempt  # Disable CSRF for simplicity (not recommended for production)
+    
+# views.py
+@require_http_methods(["POST"])
+@csrf_exempt
 def save_comment(request):
-    """
-    A Django view to save a comment for a specific verse.
-    """
     try:
-        # Parse JSON data from the request body
+        # Parse request data
         data = json.loads(request.body)
-
-        # Extract data
         book_id = data.get('book_id')
         chapter = data.get('chapter')
         verse_number = data.get('verse_number')
@@ -137,91 +115,37 @@ def save_comment(request):
 
         # Validate required fields
         if not all([book_id, chapter, verse_number, comment_text]):
-            return HttpResponseBadRequest("Missing required fields.")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'All fields are required: book_id, chapter, verse_number, comment'
+            }, status=400)
 
-        # Convert book_id, chapter, and verse_number to integers
-        try:
-            book_id = int(book_id)
-            chapter = int(chapter)
-            verse_number = int(verse_number)
-        except (TypeError, ValueError):
-            return HttpResponseBadRequest("Invalid input for book_id, chapter, or verse_number.")
-
-        # Validate the comment text
-        if not comment_text.strip():
-            raise ValidationError("Comment text cannot be empty.")
-
-        # Get the book and verse
+        # Get related objects
         book = get_object_or_404(Books, id=book_id)
         verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
 
-        # Create and save the comment
-        comment = Comment.objects.create(
+        # Create or update comment
+        comment, created = Comment.objects.update_or_create(
             author=request.user,
             book=book,
             verse=verse,
-            comment=comment_text
+            defaults={'comment': comment_text}
         )
 
-        # Return a success response
         return JsonResponse({
             'status': 'success',
-            'message': 'Comment saved successfully.',
+            'message': 'Comment saved successfully',
             'comment_id': comment.id,
-        }, status=201)
-
-    except ValidationError as e:
-        return JsonResponse({
-            'status': 'error',
-            'message': str(e),
-        }, status=400)
+            'created': created
+        })
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()  # Log the full traceback
         return JsonResponse({
             'status': 'error',
-            'message': 'An error occurred while saving the comment.',
+            'message': f'An error occurred while saving the comment: {str(e)}'
         }, status=500)
-
-@login_required
-def fetch_comments(request, book_id):
-    """
-    Fetches comments for a specific book authored by the current user.
-
-    Args:
-        request: The HTTP request object.
-        book_id: The ID of the book.
-
-    Returns:
-        JsonResponse: A JSON response containing the comments.
-    """
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-    
-    try:
-        # Get the book or return a 404 error if it doesn't exist
-        book = get_object_or_404(Books, id=book_id)
-
-        # Fetch comments for the book authored by the current user
-        comments = Comment.objects.filter(book=book, author=request.user)
-
-        # Prepare the comments data
-        comments_data = [
-            {
-                "comment": comment.comment,
-                "author": comment.author.username,
-                "chapter": comment.verse.chapter,
-                "verse_number": comment.verse.verse_number,
-                "creation_date": comment.creation_date.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-            for comment in comments
-        ]
-
-        # Return the comments as a JSON response
-        return JsonResponse({"comments": comments_data}, safe=False)
-
-    except Exception as e:
-        # Handle unexpected errors
-        return JsonResponse({"error": str(e)}, status=500)
     
 @require_http_methods(["POST"])  # Restrict this view to POST requests only
 @csrf_exempt  # Disable CSRF for simplicity (not recommended for production)
@@ -352,3 +276,31 @@ def fetch_bookmarks(request, book_id):
     except Exception as e:
         # Handle unexpected errors
         return JsonResponse({"error": str(e)}, status=500)
+    
+@require_http_methods(["POST"])
+@csrf_exempt
+def delete_comment(request):
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        chapter = data.get('chapter')
+        verse_number = data.get('verse_number')
+
+        if not all([book_id, chapter, verse_number]):
+            return HttpResponseBadRequest("Missing required fields.")
+
+        book = get_object_or_404(Books, id=book_id)
+        verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
+        comment = get_object_or_404(Comment, author=request.user, book=book, verse=verse)
+        comment.delete()
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Comment deleted successfully.',
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'An error occurred while deleting the comment.',
+        }, status=500)

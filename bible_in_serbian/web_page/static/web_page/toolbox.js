@@ -77,10 +77,20 @@ document.addEventListener('mouseup', highlightSelectedText);
 
 // Function to transform the floating box into a comment form
 function transformBoxIntoCommentForm() {
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) return;
+
+    // Check for existing comment
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-comment`
+    );
+    const existingComment = verseElement ? verseElement.title.split('\n')[0] : '';
+
     box.innerHTML = `
-        <div id="header">Коментариши</div>
-        <textarea id="comment-text" placeholder="Унесите коментар..." rows="4"></textarea>
-        <button id="save-comment">Сачувај</button>
+        <div id="header">${verseElement ? 'Измени коментар' : 'Додај коментар'}</div>
+        <textarea id="comment-text" placeholder="Унесите коментар..." rows="4">${existingComment}</textarea>
+        <button id="save-comment">Сачувај измене</button>
+        ${verseElement ? '<button id="delete-comment">Обриши коментар</button>' : ''}
         <button id="exit-comment">Изађи</button>
     `;
 
@@ -89,6 +99,10 @@ function transformBoxIntoCommentForm() {
         isCommentActive = false;
         transformBoxIntoToolbox();
     });
+    
+    if (verseElement) {
+        document.getElementById('delete-comment').addEventListener('click', deleteComment);
+    }
 }
 
 // Function to transform the floating box back into the toolbox
@@ -101,8 +115,8 @@ function transformBoxIntoToolbox() {
         <button id="bookmark">Обележи</button>
     `;
 
-    // Update bookmark button based on current verse's bookmark status
     updateBookmarkButton();
+    updateCommentButton();
 
     document.getElementById('highlight').addEventListener('click', () => {
         isHighlightActive = !isHighlightActive;
@@ -125,7 +139,25 @@ function transformBoxIntoToolbox() {
     document.getElementById('bookmark').addEventListener('click', toggleBookmark);
 }
 
-// Function to update bookmark button text based on current verse's status
+// Function to update comment button text
+function updateCommentButton() {
+    const commentBtn = document.getElementById('comment');
+    if (!commentBtn) return;
+
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        commentBtn.textContent = 'Коментариши';
+        return;
+    }
+
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-comment`
+    );
+
+    commentBtn.textContent = verseElement ? 'Измени коментар' : 'Коментариши';
+}
+
+// Function to update bookmark button text
 function updateBookmarkButton() {
     const bookmarkBtn = document.getElementById('bookmark');
     if (!bookmarkBtn) return;
@@ -136,16 +168,11 @@ function updateBookmarkButton() {
         return;
     }
 
-    // Check if current verse has a bookmark
     const verseElement = document.querySelector(
         `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
     );
 
-    if (verseElement) {
-        bookmarkBtn.textContent = 'Уклони обележивач';
-    } else {
-        bookmarkBtn.textContent = 'Обележи';
-    }
+    bookmarkBtn.textContent = verseElement ? 'Уклони обележивач' : 'Обележи';
 }
 
 // Function to toggle bookmark
@@ -156,7 +183,6 @@ function toggleBookmark() {
         return;
     }
 
-    // Check if current verse has a bookmark
     const verseElement = document.querySelector(
         `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
     );
@@ -168,7 +194,7 @@ function toggleBookmark() {
     }
 }
 
-// Function to save a comment
+// Updated saveComment function with better error handling
 function saveComment() {
     const commentText = document.getElementById('comment-text').value.trim();
     if (!commentText) {
@@ -189,7 +215,67 @@ function saveComment() {
         comment: commentText,
     };
 
+    console.log('Saving comment with data:', data); // Debug log
+
     fetch('/fetch/save_comment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => {
+        console.log('Save comment response:', response); // Debug log
+        if (!response.ok) {
+            // Try to parse error response as JSON, fallback to text if fails
+            return response.json().catch(() => {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }).then(errData => {
+                throw new Error(errData.message || `HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Save comment success:', data); // Debug log
+        if (data.status === 'success') {
+            alert('Коментар је успешно сачуван.');
+            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
+            return fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+                .then(() => {
+                    isCommentActive = false;
+                    transformBoxIntoToolbox();
+                });
+        } else {
+            throw new Error(data.message || 'Unknown error occurred while saving comment');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving comment:', error);
+        alert(`Дошло је до грешке приликом чувања коментара: ${error.message}`);
+    });
+}
+
+// Function to delete a comment
+function deleteComment() {
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        alert('Молимо изаберите стих пре брисања коментара.');
+        return;
+    }
+
+    if (!confirm('Да ли сте сигурни да желите да обришете овај коментар?')) {
+        return;
+    }
+
+    const data = {
+        book_id: selectedVerse.bookId,
+        chapter: selectedVerse.chapter,
+        verse_number: selectedVerse.verseNumber,
+    };
+
+    fetch('/fetch/delete_comment/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -205,21 +291,22 @@ function saveComment() {
     })
     .then((data) => {
         if (data.status === 'success') {
-            alert('Коментар је успешно сачуван.');
+            alert('Коментар је успешно обрисан.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            refetchVerseAnnotations(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verseNumber, targetDivId);
-            transformBoxIntoToolbox();
+            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+                .then(() => {
+                    isCommentActive = false;
+                    transformBoxIntoToolbox();
+                });
         } else {
             alert(`Грешка: ${data.message}`);
         }
     })
     .catch((error) => {
         console.error('Грешка:', error);
-        alert('Дошло је до грешке приликом чувања коментара.');
+        alert('Дошло је до грешке приликом брисања коментара.');
     });
 }
-
-// In toolbox.js - Update both functions:
 
 // Function to save a bookmark
 function saveBookmark(selectedVerse) {
@@ -247,10 +334,9 @@ function saveBookmark(selectedVerse) {
         if (data.status === 'success') {
             alert('Обележивач је успешно сачуван.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            // Call both functions sequentially
             fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
                 .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
-                .then(() => updateBookmarkButton()); // Update button after both fetches complete
+                .then(() => updateBookmarkButton());
         } else {
             alert(`Грешка: ${data.message}`);
         }
@@ -287,10 +373,9 @@ function removeBookmark(selectedVerse) {
         if (data.status === 'success') {
             alert('Обележивач је успешно уклоњен.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            // Call both functions sequentially
             fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
                 .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
-                .then(() => updateBookmarkButton()); // Update button after both fetches complete
+                .then(() => updateBookmarkButton());
         } else {
             alert(`Грешка: ${data.message}`);
         }
@@ -307,13 +392,9 @@ document.addEventListener('click', function(event) {
     const verseElement = clickedElement.closest('.verse');
 
     if (verseElement) {
-        // Remove the 'selected' class from all verses
         document.querySelectorAll('.verse').forEach((verse) => verse.classList.remove('selected'));
-
-        // Add the 'selected' class to the clicked verse
         verseElement.classList.add('selected');
-        
-        // Update bookmark button when verse selection changes
         updateBookmarkButton();
+        updateCommentButton();
     }
 });

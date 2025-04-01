@@ -5,18 +5,199 @@
 <div class="container">
     <h2 class="my-4 unselectable">Прати прогрес</h2>
     
+    <!-- Old Testament -->
+    <h3 class="mt-5 mb-3 unselectable">Књиге Старога завјета</h3>
+    
+    <!-- Law Books -->
+    <h4 class="mt-4 mb-2 unselectable">Законске књиге</h4>
     <div class="books-grid">
         {% for book_data in books_data %}
-        <div class="book-card" data-book-id="{{ book_data.book.id }}">
-            <div class="book-card-inner">
-                <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
-                    <i class="fas fa-book-medical"></i>
-                </button>
-                <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
-                    <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
-                </a>
+            {% if book_data.book.id >= 1 and book_data.book.id <= 5 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
             </div>
-        </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Historical Books -->
+    <h4 class="mt-4 mb-2 unselectable">Историјске књиге</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 6 and book_data.book.id <= 20 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Wisdom Books -->
+    <h4 class="mt-4 mb-2 unselectable">Поучне књиге</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 24 and book_data.book.id <= 30 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Major Prophets -->
+    <h4 class="mt-4 mb-2 unselectable">Пророчке књиге великих пророка</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 31 and book_data.book.id <= 37 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Minor Prophets -->
+    <h4 class="mt-4 mb-2 unselectable">Пророчке књиге малих пророка</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 38 and book_data.book.id <= 49 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- New Testament -->
+    <h3 class="mt-5 mb-3 unselectable">Књиге Новога завјета</h3>
+    
+    <!-- Gospels -->
+    <h4 class="mt-4 mb-2 unselectable">Свето јеванђеље</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 50 and book_data.book.id <= 53 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Historical Book -->
+    <h4 class="mt-4 mb-2 unselectable">Историјска књига</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id == 54 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Pauline Epistles -->
+    <h4 class="mt-4 mb-2 unselectable">Посланице светог апостола Павла</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 55 and book_data.book.id <= 68 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- General Epistles -->
+    <h4 class="mt-4 mb-2 unselectable">Саборне посланице</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id >= 69 and book_data.book.id <= 75 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Prophetic Book -->
+    <h4 class="mt-4 mb-2 unselectable">Пророчка књига</h4>
+    <div class="books-grid">
+        {% for book_data in books_data %}
+            {% if book_data.book.id == 76 %}
+            <div class="book-card" data-book-id="{{ book_data.book.id }}">
+                <div class="book-card-inner">
+                    <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                        <i class="fas fa-book-medical"></i>
+                    </button>
+                    <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                        <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         {% endfor %}
     </div>
 </div>

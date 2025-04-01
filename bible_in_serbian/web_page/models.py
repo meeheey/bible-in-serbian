@@ -47,3 +47,20 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return f'Означено: ({self.book.acronym} {self.verse.chapter}:{self.verse.verse_number})'
+    
+class ReadBook(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='books_read')
+    book = models.ForeignKey('verse_fetcher.Books', on_delete=models.CASCADE, related_name='book_read_by')
+    creation_date = models.DateTimeField(default=timezone.now, editable=False)
+
+    class Meta:
+        verbose_name = 'ReadBook'
+        verbose_name_plural = 'ReadBooks'
+        unique_together = ('author', 'book')
+        indexes = [
+            models.Index(fields=['author']),
+            models.Index(fields=['book'])        ]
+
+    def __str__(self):
+        return f'{self.book.acronym} прочитао {self.user.username}'
+

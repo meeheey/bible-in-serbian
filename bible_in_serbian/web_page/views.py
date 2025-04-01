@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
-from .models import User, Comment, Bookmark
+from .models import User, Comment, Bookmark, ReadBook
 from verse_fetcher.models import Books, Verses
 
 
@@ -84,4 +84,15 @@ def view_comment(request, comment_id):
     comment = Comment.objects.get(id=comment_id)
     return render(request, "web_page/comment.html",{
         "comment": comment
+    })
+
+def show_read_books(request):
+    books = Books.objects.all()
+    read_book_ids = ReadBook.objects.filter(author=request.user).values_list('book_id', flat=True)
+    books_data = [
+        {"book": book, "read": "yes" if book.id in read_book_ids else "no"}
+        for book in books
+    ]
+    return render(request, "web_page/read_books.html", {
+        "books_data": books_data
     })

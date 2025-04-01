@@ -12,4 +12,5 @@ urlpatterns = [
     path('save_bookmark/', views.save_bookmark, name='save_bookmark'),
     path('delete_bookmark/', views.delete_bookmark, name='delete_bookmark'),
     path('<int:book_id>/bookmarks/', views.fetch_bookmarks, name='fetch_bookmarks'),
+    path('toggle-read-status/', views.toggle_read_status, name='toggle_read_status'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

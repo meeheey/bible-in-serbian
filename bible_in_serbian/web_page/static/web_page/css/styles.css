@@ -436,3 +436,99 @@ select:focus {
     box-sizing: border-box; /* Ensures padding is included in the width */
     padding-right: 10px;    /* Adds padding to the right */
 }
+
+/* ==================== */
+/* Book Grid Styles     */
+/* ==================== */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.book-acronym {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #343a40;
+    text-align: center;
+}
+
+.book-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Read state - using your yellow theme */
+.book-btn.read {
+    background-color: #ffc107;
+    color: #343a40;
+}
+
+/* Unread state */
+.book-btn.unread {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.book-btn.read:hover {
+    background-color: #e0a800;
+}
+
+.book-btn.unread:hover {
+    background-color: #dee2e6;
+}
+
+/* ==================== */
+/* Book Card Link Styles */
+/* ==================== */
+.book-card-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.book-link:hover .book-acronym {
+    color: #ffc107;
+    text-decoration: underline;
+}
+
+/* Make sure button clicks don't trigger link */
+.book-btn {
+    position: relative;
+    z-index: 2;
+}

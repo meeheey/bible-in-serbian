@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -9,7 +9,7 @@ from django.http import JsonResponse
 import json
 
 from .models import Books, Verses
-from web_page.models import User, Comment, Bookmark
+from web_page.models import User, Comment, Bookmark, ReadBook
 
 def fetch_book(request, book_id):
     book = Books.objects.get(id=book_id)
@@ -304,3 +304,28 @@ def delete_comment(request):
             'status': 'error',
             'message': 'An error occurred while deleting the comment.',
         }, status=500)
+    
+@require_POST
+@csrf_exempt  # Only for development, use proper CSRF in production
+def toggle_read_status(request):
+    book_id = request.POST.get('book_id')
+    user = request.user
+    
+    if not user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'Not authenticated'}, status=401)
+    
+    try:
+        book = Books.objects.get(id=book_id)
+        read_book, created = ReadBook.objects.get_or_create(
+            author=user,
+            book=book
+        )
+        
+        if not created:
+            read_book.delete()
+            return JsonResponse({'status': 'success', 'is_read': False})
+        
+        return JsonResponse({'status': 'success', 'is_read': True})
+    
+    except Books.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Book not found'}, status=404)

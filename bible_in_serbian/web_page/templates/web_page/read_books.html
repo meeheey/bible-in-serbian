@@ -1,0 +1,25 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2 class="my-4 unselectable">Прати прогрес</h2>
+    
+    <div class="books-grid">
+        {% for book_data in books_data %}
+        <div class="book-card" data-book-id="{{ book_data.book.id }}">
+            <div class="book-card-inner">
+                <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">
+                    <i class="fas fa-book-medical"></i>
+                </button>
+                <a href="{% url 'show_book' book_id=book_data.book.id %}" class="book-link">
+                    <div class="book-acronym unselectable">{{ book_data.book.acronym }}</div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{% static 'web_page/readstatus.js' %}"></script>
+{% endblock %}

@@ -13,4 +13,5 @@ urlpatterns = [
     path('comparative_reading/', views.comparative_reading, name='comparative reading'),
     path('comment/<comment_id>/', views.view_comment, name="view_comment"),
     path('read/', views.show_read_books, name='show_read_books'),
+    path('bookmarks/', views.show_bookmarks, name='show_bookmarks'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

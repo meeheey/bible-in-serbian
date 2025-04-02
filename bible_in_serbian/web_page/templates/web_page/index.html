@@ -1,29 +1,287 @@
 {% extends "web_page/layout.html" %}
+{% load static %}
 
 {% block body %}
 <div class="container">
-    <h2 class="my-4 unselectable">Књиге Светог писма</h2>
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col" class="unselectable">Бр.</th>
-                    <th scope="col" class="unselectable">Скраћеница</th>
-                    <th scope="col" class="unselectable">Назив</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for book in books %}
-                <tr>
-                    <th scope="row" class="unselectable">{{ forloop.counter }}</th>
-                    <td>{{ book.acronym }}</td>
-                    <td>{{ book.title }}</td>
-                    <td><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <h2 class="my-4 unselectable">Садржај</h2>
+    
+    <div class="bible-table-container">
+        <!-- Old Testament -->
+        <h3 class="mt-5 mb-3 unselectable">Књиге Старога завјета</h3>
+        
+        <!-- Law Books -->
+        <h4 class="mt-4 mb-3 unselectable">Законске књиге</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 1 and book.id <= 5 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Historical Books -->
+        <h4 class="mt-4 mb-3 unselectable">Историјске књиге</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 6 and book.id <= 20 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Wisdom Books -->
+        <h4 class="mt-4 mb-3 unselectable">Поучне књиге</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 24 and book.id <= 30 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Major Prophets -->
+        <h4 class="mt-4 mb-3 unselectable">Пророчке књиге великих пророка</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 31 and book.id <= 37 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Minor Prophets -->
+        <h4 class="mt-4 mb-3 unselectable">Пророчке књиге малих пророка</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 38 and book.id <= 49 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- New Testament -->
+        <h3 class="mt-5 mb-3 unselectable">Књиге Новога завјета</h3>
+        
+        <!-- Gospels -->
+        <h4 class="mt-4 mb-3 unselectable">Свето јеванђеље</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 50 and book.id <= 53 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Historical Book -->
+        <h4 class="mt-4 mb-3 unselectable">Историјска књига</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id == 54 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pauline Epistles -->
+        <h4 class="mt-4 mb-3 unselectable">Посланице светог апостола Павла</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 55 and book.id <= 68 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- General Epistles -->
+        <h4 class="mt-4 mb-3 unselectable">Саборне посланице</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id >= 69 and book.id <= 75 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Prophetic Book -->
+        <h4 class="mt-4 mb-3 unselectable">Пророчка књига</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-5">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="width: 60px" class="unselectable">Бр.</th>
+                        <th scope="col" style="width: 100px" class="unselectable">Скраћеница</th>
+                        <th scope="col" class="unselectable">Назив</th>
+                        <th scope="col" style="width: 80px"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        {% if book.id == 76 %}
+                        <tr>
+                            <th scope="row" class="unselectable">{{ forloop.counter }}</th>
+                            <td class="text-nowrap">{{ book.acronym }}</td>
+                            <td>{{ book.title }}</td>
+                            <td class="text-center"><a href="{% url 'show_book' book_id=book.id %}" class="btn btn-sm btn-outline-primary"><i class='fas fa-book-medical'></i></a></td>          
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
 {% endblock %}

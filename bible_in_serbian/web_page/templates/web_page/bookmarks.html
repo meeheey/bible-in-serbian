@@ -1,0 +1,62 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2 class="my-4 unselectable">Обележивачи</h2>
+    
+    <div class="books-grid">
+        {% for bookmark in bookmarks %}
+        <div class="book-card" data-book-id="{{ book_data.book.id }}">
+            <div class="book-card-inner">
+                <button class="book-btn bookmark">
+                    <i class="fa fa-bookmark"></i>
+                </button>
+                <a href="{% url 'show_book' book_id=bookmark.verse.book.id %}" class="book-link">
+                    <div class="book-acronym unselectable">
+                        {{ bookmark.verse.book.acronym }} {{ bookmark.verse.chapter }}{% if bookmark.verse.verse_number != 0 %}: {{ bookmark.verse.verse_number }}{% endif %}
+                    </div>
+                </a>
+                
+                <!-- Display the preview of the verse -->
+                <div class="verse-preview">
+                    <p>{% if bookmark.verse.verse_number == 0 %}<em>{% endif %}{{ bookmark.verse.verse|truncatewords:5 }}{% if bookmark.verse.verse_number == 0 %}</em>{% endif %}</p>
+                </div>
+                
+                <!-- Full verse text, initially hidden -->
+                <div class="verse-text" style="display: none;">
+                    <p>{% if bookmark.verse.verse_number == 0 %}<em>{% endif %}{{ bookmark.verse.verse }}{% if bookmark.verse.verse_number == 0 %}</em>{% endif %}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+  document.querySelectorAll('.book-card').forEach(card => {
+    card.addEventListener('click', function() {
+        const verseText = card.querySelector('.verse-text');
+        const versePreview = card.querySelector('.verse-preview');
+        const bookmarkBtn = card.querySelector('.book-btn');
+        
+        // Toggle visibility of the verse text and hide preview
+        if (verseText.style.display === "none" || verseText.style.display === "") {
+            verseText.style.display = "block";
+            versePreview.style.display = "none";  // Hide the preview when expanded
+            
+            // Update bookmark button classes
+            bookmarkBtn.classList.remove('bookmark');
+            bookmarkBtn.classList.add('bookmark-opened');
+        } else {
+            verseText.style.display = "none";
+            versePreview.style.display = "block";  // Show the preview again when collapsed
+            
+            // Restore original bookmark button classes
+            bookmarkBtn.classList.remove('bookmark-opened');
+            bookmarkBtn.classList.add('bookmark');
+        }
+    });
+});
+</script>
+{% endblock %}

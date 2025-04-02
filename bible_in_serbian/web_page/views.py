@@ -96,3 +96,9 @@ def show_read_books(request):
     return render(request, "web_page/read_books.html", {
         "books_data": books_data
     })
+
+def show_bookmarks(request):
+    bookmarks = Bookmark.objects.filter(author=request.user).order_by('creation_date')
+    return render(request, "web_page/bookmarks.html", {
+        "bookmarks": bookmarks
+    })

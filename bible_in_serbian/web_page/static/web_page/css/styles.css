@@ -456,6 +456,7 @@ select:focus {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .book-card:hover {
@@ -495,6 +496,18 @@ select:focus {
     color: #6c757d;
 }
 
+/* Unread state */
+.book-btn.bookmark {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.book-btn.bookmark-opened {
+    background-color: #ffc107;
+    color: #343a40;
+}
+
+
 .book-btn.read:hover {
     background-color: #e0a800;
 }
@@ -531,4 +544,58 @@ select:focus {
 .book-btn {
     position: relative;
     z-index: 2;
+}
+
+.verse-preview p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ensures that long text is truncated with an ellipsis */
+}
+
+.verse-text {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    color: #333;
+}
+
+.read-more {
+    color: #007bff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* ============= */
+/* Table Styles */
+/* ============= */
+
+.bible-table-container {
+    margin-bottom: 3rem;
+}
+.table {
+    table-layout: fixed;
+}
+.table th, .table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+.table thead th {
+    border-bottom-width: 2px;
+    background-color: #343a40;
+    color: white;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+.text-nowrap {
+    white-space: nowrap;
 }

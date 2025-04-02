@@ -23,7 +23,7 @@ def fetch_random_verse(request):
     random_verse_id = choice(verse_ids)
     random_verse = Verses.objects.get(id=random_verse_id)
     while True:
-        if random_verse.verse_number == 0:
+        while random_verse.verse_number == 0:
             random_verse = Verses.objects.get(id=random_verse_id)
         break
     random_verse_data = {

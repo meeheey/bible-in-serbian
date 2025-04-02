@@ -102,3 +102,6 @@ def show_bookmarks(request):
     return render(request, "web_page/bookmarks.html", {
         "bookmarks": bookmarks
     })
+
+def random_verse_generator(request):
+        return render(request, "web_page/random_verse_generator.html")

@@ -101,7 +101,7 @@ h1 {
 /* Button Styles         */
 /* ==================== */
 .btn-primary {
-    background-color: #ffc107;
+    background-color: #ffc107 !important;
     border: none;
     color: #343a40;
     padding: 10px 20px;

@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from random import choice
 
 import json
 
@@ -16,6 +17,22 @@ def fetch_book(request, book_id):
     verses = Verses.objects.filter(book=book) 
     verses_data = [{"book_id": book.id, "chapter": verse.chapter, "verse_number": verse.verse_number, "verse": verse.verse} for verse in verses]
     return JsonResponse({"verses": verses_data})
+
+def fetch_random_verse(request):
+    verse_ids = Verses.objects.values_list('id', flat=True)
+    random_verse_id = choice(verse_ids)
+    random_verse = Verses.objects.get(id=random_verse_id)
+    while True:
+        if random_verse.verse_number == 0:
+            random_verse = Verses.objects.get(id=random_verse_id)
+        break
+    random_verse_data = {
+        "book_acronym": random_verse.book.acronym,
+        "chapter": random_verse.chapter,
+        "verse_number": random_verse.verse_number,
+        "verse": random_verse.verse,
+    }
+    return JsonResponse({"random_verse": random_verse_data})
 
 # views.py
 @require_http_methods(["POST"])

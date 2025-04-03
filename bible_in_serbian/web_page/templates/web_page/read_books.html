@@ -31,7 +31,7 @@
     <h4 class="mt-4 mb-2 unselectable">Историјске књиге</h4>
     <div class="books-grid">
         {% for book_data in books_data %}
-            {% if book_data.book.id >= 6 and book_data.book.id <= 20 %}
+            {% if book_data.book.id >= 6 and book_data.book.id <= 23 %}
             <div class="book-card" data-book-id="{{ book_data.book.id }}">
                 <div class="book-card-inner">
                     <button class="book-btn {% if book_data.read == 'yes' %}read{% else %}unread{% endif %}">

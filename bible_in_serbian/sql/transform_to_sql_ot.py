@@ -43,7 +43,7 @@ def transform_to_sql(input_file_path, book_id):
                 
                 if chapter_num.isdigit():
                     current_chapter = int(chapter_num)
-                    sql_commands.append(f"({book_id}, {current_chapter}, 0, '{title}')")
+                    sql_commands.append(f"({book_id}, {current_chapter}, {current_chapter}, 0,  0, '{title}')")
                     i += 1
                     continue
 
@@ -55,7 +55,8 @@ def transform_to_sql(input_file_path, book_id):
             
             if verse_num.isdigit():
                 verse_num = int(verse_num)
-                sql_commands.append(f"({book_id}, {current_chapter}, {verse_num}, '{verse_text}')")
+                sql_commands.append(f"({book_id}, {current_chapter}, {current_chapter}, {verse_num},  {verse_num}, '{verse_text}')")
+
         
         i += 1
 

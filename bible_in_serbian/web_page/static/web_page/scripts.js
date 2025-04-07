@@ -130,13 +130,18 @@ function fetchVerses(bookId, targetDivId) {
             if (verse.verse_number === 0) {
                 // Format for heading verses
                 return `<div class="verse" data-book-id="${bookId}" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
-                            <strong>${verse.chapter}</strong> <em>${verse.verse}</em>
+                            <strong>${verse.chapter_mask}</strong> <em>${verse.verse}</em>
                         </div>`;
             } else {
-                // Format for regular verses
                 return `<div class="verse" data-book-id="${bookId}" data-chapter="${verse.chapter}" data-verse-number="${verse.verse_number}">
-                            <strong>${verse.chapter}:${verse.verse_number}</strong> ${verse.verse}
-                        </div>`;
+            <strong>
+                ${verse.chapter_mask && verse.verse_number_mask && verse.chapter_mask !== '' && verse.verse_number_mask !== '' 
+                    ? `${verse.chapter_mask}:${verse.verse_number_mask}` 
+                    : `${verse.chapter_mask || ''}${verse.verse_number_mask || ''}`}
+            </strong>
+            ${verse.verse}
+        </div>`;
+
             }
         }).join('');
         document.getElementById(targetDivId).innerHTML = versesHtml;

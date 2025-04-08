@@ -15,7 +15,7 @@ from web_page.models import User, Comment, Bookmark, ReadBook
 def fetch_book(request, book_id):
     book = Books.objects.get(id=book_id)
     verses = Verses.objects.filter(book=book) 
-    verses_data = [{"book_id": book.id, "chapter": verse.chapter, "chapter_mask": verse.chapter_mask, "verse_number": verse.verse_number, "verse_number_mask": verse.verse_number_mask, "verse": verse.verse} for verse in verses]
+    verses_data = [{"book_id": book.id, "book_acronym": book.acronym, "chapter": verse.chapter, "chapter_mask": verse.chapter_mask, "verse_number": verse.verse_number, "verse_number_mask": verse.verse_number_mask, "verse": verse.verse} for verse in verses]
     return JsonResponse({"verses": verses_data})
 
 def fetch_random_verse(request):

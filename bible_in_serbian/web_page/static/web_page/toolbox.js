@@ -18,6 +18,7 @@ let isDragging = false;
 let offsetX, offsetY;
 let isHighlightActive = false;
 let isCommentActive = false;
+let isQuoteActive = false;
 
 // Initialize the toolbox
 transformBoxIntoToolbox();
@@ -132,9 +133,7 @@ function transformBoxIntoToolbox() {
         }
     });
     
-    document.getElementById('quote').addEventListener('click', () => {
-        alert('Quote action triggered');
-    });
+    document.getElementById('quote').addEventListener('click', copyVerseToClipboard);
     
     document.getElementById('bookmark').addEventListener('click', toggleBookmark);
 }
@@ -308,6 +307,70 @@ function deleteComment() {
     });
 }
 
+function copyVerseToClipboard() {
+    const selectedVerses = document.querySelectorAll('.verse.selected');
+    
+    if (selectedVerses.length === 0) {
+        alert('Молимо изаберите стих пре него што га копирате.');
+        return;
+    }
+
+    const verseElement = selectedVerses[0];
+    const bookAcronym = verseElement.getAttribute('data-book-acronym') || 
+                       verseElement.getAttribute('data-book-id');
+    const chapter = verseElement.getAttribute('data-chapter-mask');
+    const verseNumber = verseElement.getAttribute('data-verse-number-mask');
+
+    // Clone the verse to safely manipulate it
+    const verseClone = verseElement.cloneNode(true);
+    
+    // Remove verse number element (the <strong> tag)
+    const verseNumberElement = verseClone.querySelector('strong');
+    if (verseNumberElement) {
+        verseNumberElement.remove();
+    }
+    
+    // Remove any annotation icons
+    verseClone.querySelectorAll('.fa, .annotation-icon, button').forEach(el => el.remove());
+    
+    // Get clean text
+    let verseText = verseClone.textContent
+    .replace(/\s+/g, ' ')
+    .trim();
+
+    // Remove all trailing punctuation before closing quote
+    verseText = verseText.replace(/[.,;:]+([”"]?)$/, '$1');
+
+    // Enhanced formatting
+    let verseReference = chapter;
+    if (verseNumber && verseNumber !== "0") {
+    verseReference += `:${verseNumber}`;
+    }
+    const formattedText = `„${verseText}“ (${bookAcronym} ${verseReference})`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(formattedText)
+        .then(() => {
+            // Optional: You can remove this alert if you prefer silent copying
+            alert('Стих је копиран у клипборд!');
+        })
+        .catch(err => {
+            console.error('Грешка при копирању:', err);
+            // Fallback method
+            const textarea = document.createElement('textarea');
+            textarea.value = formattedText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert('Стих је копиран у клипборд!');
+            } catch (e) {
+                alert('Није успело копирање стиха. Молимо пробајте ручно.');
+            }
+            document.body.removeChild(textarea);
+        });
+}
+
 // Function to save a bookmark
 function saveBookmark(selectedVerse) {
     const data = {
@@ -386,7 +449,6 @@ function removeBookmark(selectedVerse) {
     });
 }
 
-// Add event listener for verse selection
 document.addEventListener('click', function(event) {
     const clickedElement = event.target;
     const verseElement = clickedElement.closest('.verse');
@@ -396,5 +458,11 @@ document.addEventListener('click', function(event) {
         verseElement.classList.add('selected');
         updateBookmarkButton();
         updateCommentButton();
+        
+        // If quote mode is active, copy the verse immediately
+        if (isQuoteActive) {
+            copyVerseToClipboard();
+            isQuoteActive = false; // Deactivate after copying
+        }
     }
 });

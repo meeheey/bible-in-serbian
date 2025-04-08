@@ -22,15 +22,17 @@ def fetch_random_verse(request):
     verse_ids = Verses.objects.values_list('id', flat=True)
     random_verse_id = choice(verse_ids)
     random_verse = Verses.objects.get(id=random_verse_id)
-    while True:
-        while random_verse.verse_number == 0:
-            random_verse = Verses.objects.get(id=random_verse_id)
-        break
+    while random_verse.verse_number == 0:
+        random_verse_id = choice(verse_ids)
+        random_verse = Verses.objects.get(id=random_verse_id)
+    exists = Bookmark.objects.filter(verse=random_verse).exists()
     random_verse_data = {
         "book_acronym": random_verse.book.acronym,
+        "book_id": random_verse.book.id,
         "chapter": random_verse.chapter,
         "verse_number": random_verse.verse_number,
         "verse": random_verse.verse,
+        "is_bookmarked": exists
     }
     return JsonResponse({"random_verse": random_verse_data})
 

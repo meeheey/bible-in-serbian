@@ -14,7 +14,7 @@
                 </button>
                 <a href="{% url 'show_book' book_id=bookmark.verse.book.id %}" class="book-link">
                     <div class="book-acronym unselectable">
-                        {{ bookmark.verse.book.acronym }} {{ bookmark.verse.chapter }}{% if bookmark.verse.verse_number != 0 %}: {{ bookmark.verse.verse_number }}{% endif %}
+                        {{ bookmark.verse.book.acronym }} {{ bookmark.verse.chapter_mask }}{% if bookmark.verse.verse_number != 0 %}{% if bookmark.verse.verse_number_mask %}:{% endif %} {{ bookmark.verse.verse_number_mask }}{% endif %}
                     </div>
                 </a>
                 

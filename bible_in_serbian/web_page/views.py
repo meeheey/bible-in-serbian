@@ -86,6 +86,15 @@ def view_comment(request, comment_id):
         "comment": comment
     })
 
+def view_verse(request, book_id, chapter, verse_number):
+    book = Books.objects.get(id=book_id)
+    verse = Verses.objects.get(book=book, chapter=chapter, verse_number=verse_number)
+    exists = Bookmark.objects.filter(verse=verse).exists()
+    return render(request, "web_page/verse.html",{
+        "verse": verse,
+        "is_bookmarked": exists
+    })
+
 def show_read_books(request):
     books = Books.objects.all()
     read_book_ids = ReadBook.objects.filter(author=request.user).values_list('book_id', flat=True)

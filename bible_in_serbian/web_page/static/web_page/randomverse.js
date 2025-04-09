@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (buttonElement) {
             if (isBookmarked) {
                 // If the verse is bookmarked, show the filled bookmark icon
-                buttonElement.innerHTML = `<i class='fa fa-bookmark'></i>`;
+                buttonElement.innerHTML = `<i class='fas fa-bookmark'></i>`;
             } else {
                 // If the verse is not bookmarked, show the empty bookmark icon
                 buttonElement.innerHTML = `<i class='far fa-bookmark'></i>`;

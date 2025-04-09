@@ -348,14 +348,14 @@ select:focus {
 }
 
 /*Comment Styles */
-.fas.fa-comment {
+.fa.fa-comment {
     margin-left: 5px;
     cursor: pointer;
     color: #007bff;
 }
 
 /*Bookmark Styles */
-.fas.fa-bookmark {
+.fa.fa-bookmark {
     margin-left: 5px;
     cursor: pointer;
     color: #007bff;

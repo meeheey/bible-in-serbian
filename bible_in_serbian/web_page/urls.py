@@ -12,6 +12,7 @@ urlpatterns = [
     path('books/<int:book_id>/', views.show_book, name='show_book'),
     path('comparative_reading/', views.comparative_reading, name='comparative reading'),
     path('comment/<comment_id>/', views.view_comment, name="view_comment"),
+    path('books/<int:book_id>/<int:chapter>/<int:verse_number>/', views.view_verse, name='view_verse'),
     path('read/', views.show_read_books, name='show_read_books'),
     path('bookmarks/', views.show_bookmarks, name='show_bookmarks'),
     path('random_verse_generator', views.random_verse_generator, name='random_verse_generator'),

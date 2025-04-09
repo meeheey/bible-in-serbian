@@ -43,7 +43,7 @@ export function fetchComments(bookId, targetDivId, csrfToken) {
                 );
                 if (verseElement) {
                     const commentIcon = document.createElement('i');
-                    commentIcon.className = 'fas fa-comment';
+                    commentIcon.className = 'fa fa-comment';
                     commentIcon.title = `${comment.comment}\nCreated on: ${comment.creation_date}`;
                     verseElement.appendChild(commentIcon);
                 }
@@ -82,7 +82,7 @@ export function fetchBookmarks(bookId, targetDivId, csrfToken) {
                 );
                 if (verseElement) {
                     const bookmarkIcon = document.createElement('i');
-                    bookmarkIcon.className = 'fas fa-bookmark';
+                    bookmarkIcon.className = 'fa fa-bookmark';
                     bookmarkIcon.title = `Created on: ${bookmark.creation_date}`;
                     verseElement.appendChild(bookmarkIcon);
                 }

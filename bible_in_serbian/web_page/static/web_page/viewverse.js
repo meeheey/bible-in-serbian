@@ -1,59 +1,160 @@
 import { getCookie } from './utils.js';
 
-// Declare csrfToken at the top of the script
-const csrfToken = getCookie('csrftoken');
-
 document.addEventListener('DOMContentLoaded', function () {
-    let verse = {};  // Define verse globally
-    let bookId = JSON.parse(document.getElementById('book_id').textContent);
-    let chapter = JSON.parse(document.getElementById('chapter').textContent);
-    let verseNumber = JSON.parse(document.getElementById('verse_number').textContent);
+    // Get initial data
+    const bookId = JSON.parse(document.getElementById('book_id').textContent);
+    const chapter = JSON.parse(document.getElementById('chapter').textContent);
+    const verseNumber = JSON.parse(document.getElementById('verse_number').textContent);
     let isBookmarked = JSON.parse(document.getElementById('is_bookmarked').textContent);
-
-    // Comment system functionality
+    let commentText = JSON.parse(document.getElementById('comment_text').textContent); // Will be null if no comment
+    
+    // DOM elements
     const commentBtn = document.getElementById('comment-btn');
     const quoteBtn = document.getElementById('quote-btn');
+    const bookmarkBtn = document.getElementById('save-or-remove-bookmark-btn');
     const verseContainer = document.getElementById('verse-container');
-
-    // Function to show comment form
-    function showCommentForm() {
-        // Check for existing comment (you'll need to implement this)
-        // For now, we'll assume we don't know if there's an existing comment
+    const csrfToken = getCookie('csrftoken');
+    
+    // Track active form state
+    let activeForm = null;
+    
+    // Update comment button icon based on existing comment
+    function updateCommentButton() {
+        if (!commentBtn) return;
         
-        const commentForm = document.createElement('div');
-        commentForm.className = 'comment-form';
-        commentForm.innerHTML = `
-            <div class="comment-header">Додај коментар</div>
-            <textarea id="comment-text" placeholder="Унесите коментар..." rows="4"></textarea>
+        if (commentText) {
+            commentBtn.innerHTML = `<i class='fas fa-comment'></i>`;
+            commentBtn.title = 'Измени коментар';
+        } else {
+            commentBtn.innerHTML = `<i class='far fa-comment'></i>`;
+            commentBtn.title = 'Додај коментар';
+        }
+    }
+    
+    // Clear any existing form before showing new one
+    function clearActiveForm() {
+        if (activeForm) {
+            verseContainer.removeChild(activeForm);
+            activeForm = null;
+        }
+        showActionButtons();
+    }
+    
+    // Show comment form (for new or edit)
+    function showCommentForm() {
+        clearActiveForm();
+        hideActionButtons();
+        
+        activeForm = document.createElement('div');
+        activeForm.className = 'comment-form';
+        
+        if (commentText) {
+            // Show existing comment with actions
+            activeForm.innerHTML = `
+                <div class="comment-header">Ваш коментар</div>
+                <div class="existing-comment">${commentText}</div>
+                <div class="comment-actions">
+                    <button id="edit-comment" class="btn btn-primary">Измени</button>
+                    <button id="delete-comment" class="btn btn-primary">Обриши</button>
+                    <button id="exit-comment" class="btn btn-primary">Изађи</button>
+                </div>
+            `;
+            
+            verseContainer.appendChild(activeForm);
+            
+            document.getElementById('edit-comment').addEventListener('click', () => showEditForm());
+            document.getElementById('delete-comment').addEventListener('click', deleteComment);
+            document.getElementById('exit-comment').addEventListener('click', clearActiveForm);
+        } else {
+            // Show new comment form
+            activeForm.innerHTML = `
+                <div class="comment-header">Додај коментар</div>
+                <textarea id="comment-text" placeholder="Унесите коментар..." rows="4"></textarea>
+                <div class="comment-buttons">
+                    <button id="save-comment" class="btn btn-primary">Сачувај</button>
+                    <button id="cancel-comment" class="btn btn-primary">Откажи</button>
+                </div>
+            `;
+            
+            verseContainer.appendChild(activeForm);
+            
+            document.getElementById('save-comment').addEventListener('click', saveNewComment);
+            document.getElementById('cancel-comment').addEventListener('click', clearActiveForm);
+        }
+    }
+    
+    // Show edit form
+    function showEditForm() {
+        clearActiveForm();
+        hideActionButtons();
+        
+        activeForm = document.createElement('div');
+        activeForm.className = 'comment-form';
+        activeForm.innerHTML = `
+            <div class="comment-header">Измени коментар</div>
+            <textarea id="comment-text" placeholder="Унесите коментар..." rows="4">${commentText}</textarea>
             <div class="comment-buttons">
-                <button id="save-comment" class="btn btn-primary">Сачувај</button>
-                <button id="cancel-comment" class="btn btn-primary">Откажи</button>
+                <button id="update-comment" class="btn btn-primary">Ажурирај</button>
+                <button id="cancel-edit" class="btn btn-primary">Откажи</button>
             </div>
         `;
         
-        verseContainer.appendChild(commentForm);
+        verseContainer.appendChild(activeForm);
         
-        document.getElementById('save-comment').addEventListener('click', saveComment);
-        document.getElementById('cancel-comment').addEventListener('click', () => {
-            verseContainer.removeChild(commentForm);
+        document.getElementById('update-comment').addEventListener('click', updateComment);
+        document.getElementById('cancel-edit').addEventListener('click', () => showCommentForm());
+    }
+    
+    // Hide action buttons
+    function hideActionButtons() {
+        document.querySelectorAll('#comment-btn, #save-or-remove-bookmark-btn, #quote-btn').forEach(btn => {
+            btn.style.display = 'none';
         });
     }
-
-    // Function to save a comment
-    function saveComment() {
-        const commentText = document.getElementById('comment-text').value.trim();
-        if (!commentText) {
+    
+    // Show action buttons
+    function showActionButtons() {
+        document.querySelectorAll('#comment-btn, #save-or-remove-bookmark-btn, #quote-btn').forEach(btn => {
+            btn.style.display = 'inline-block';
+        });
+    }
+    
+    // Save new comment
+    function saveNewComment() {
+        const textarea = document.getElementById('comment-text');
+        const newComment = textarea ? textarea.value.trim() : '';
+        
+        if (!newComment) {
             alert('Коментар не може бити празан.');
             return;
         }
-
+        
+        saveCommentData(newComment, 'new');
+    }
+    
+    // Update existing comment
+    function updateComment() {
+        const textarea = document.getElementById('comment-text');
+        const updatedComment = textarea ? textarea.value.trim() : '';
+        
+        if (!updatedComment) {
+            alert('Коментар не може бити празан.');
+            return;
+        }
+        
+        saveCommentData(updatedComment, 'edit');
+    }
+    
+    // Save comment to server
+    function saveCommentData(comment, mode) {
         const data = {
             book_id: bookId,
             chapter: chapter,
             verse_number: verseNumber,
-            comment: commentText,
+            comment: comment,
+            mode: mode
         };
-
+        
         fetch('/fetch/save_comment/', {
             method: 'POST',
             headers: {
@@ -63,64 +164,89 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(data),
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             return response.json();
         })
         .then(data => {
             if (data.status === 'success') {
-                alert('Коментар је успешно сачуван.');
-                // Remove the comment form
-                const commentForm = document.querySelector('.comment-form');
-                if (commentForm) {
-                    verseContainer.removeChild(commentForm);
-                }
-                // You might want to refresh the page or update the UI to show the comment was saved
+                // Update the comment text and show the comment immediately
+                commentText = data.comment_text || comment;
+                updateCommentButton();
+                showCommentForm(); // Show the comment view after saving
             } else {
-                throw new Error(data.message || 'Unknown error occurred while saving comment');
+                throw new Error(data.message || 'Unknown error');
             }
         })
         .catch(error => {
-            console.error('Error saving comment:', error);
-            alert(`Дошло је до грешке приликом чувања коментара: ${error.message}`);
+            console.error('Error:', error);
+            alert(`Дошло је до грешке: ${error.message}`);
         });
     }
-
+    
+    // Delete comment
+    function deleteComment() {
+        if (!confirm('Да ли сте сигурни да желите да обришете овај коментар?')) return;
+        
+        const data = {
+            book_id: bookId,
+            chapter: chapter,
+            verse_number: verseNumber
+        };
+        
+        fetch('/fetch/delete_comment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                commentText = null;
+                updateCommentButton();
+                clearActiveForm();
+            } else {
+                throw new Error(data.message || 'Unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Дошло је до грешке: ${error.message}`);
+        });
+    }
+    
+    // Copy verse to clipboard
     function copyVerseToClipboard() {
         const verseText = document.getElementById('verse-text').textContent.trim();
         const verseReference = document.getElementById('verse-reference').textContent.trim();
         
-        // Clean the verse text - remove unwanted spaces and normalize
         let cleanedText = verseText
-            .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-            .replace(/\s([,.;:!?])/g, '$1') // Remove space before punctuation
+            .replace(/\s+/g, ' ')
+            .replace(/\s([,.;:!?])/g, '$1')
             .trim();
     
-        // Remove punctuation before closing quote, but preserve the quote
         cleanedText = cleanedText.replace(/[.,;:!?]+([”"]?)$/, '$1');
     
-        // If the text doesn't end with a quote, add proper Serbian-style quotes
         if (!/[”"]$/.test(cleanedText)) {
             cleanedText = `„${cleanedText}“`;
         } else {
-            // If it already has quotes, ensure proper formatting
             cleanedText = cleanedText.replace(/^["']|["']$/g, '');
             cleanedText = `„${cleanedText}“`;
         }
     
-        // Final formatted text
         const formattedText = `${cleanedText} (${verseReference})`;
         
-        // Copy to clipboard
         navigator.clipboard.writeText(formattedText)
             .then(() => {
-                // Optional: You can remove this alert if you prefer silent copying
                 alert('Стих је копиран у клипборд!');
             })
             .catch(err => {
                 console.error('Грешка при копирању:', err);
-                // Fallback method
                 const textarea = document.createElement('textarea');
                 textarea.value = formattedText;
                 document.body.appendChild(textarea);
@@ -135,7 +261,15 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Function to save a bookmark
+    // Bookmark functions
+    function toggleBookmark() {
+        if (isBookmarked) {
+            removeBookmark();
+        } else {
+            saveBookmark();
+        }
+    }
+    
     function saveBookmark() {
         const data = {
             book_id: bookId,
@@ -151,23 +285,25 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(data),
         })
-        .then((response) => response.json())
-        .then((data) => {
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
             if (data.status === 'success') {
                 alert('Обележивач је успешно сачуван.');
                 isBookmarked = true;
-                changeButton();
+                updateBookmarkButton();
             } else {
-                alert(`Грешка: ${data.message}`);
+                throw new Error(data.message || 'Unknown error');
             }
         })
-        .catch((error) => {
-            console.error('Грешка:', error);
+        .catch(error => {
+            console.error('Error:', error);
             alert('Дошло је до грешке приликом чувања обележивача.');
         });
     }
 
-    // Function to remove a bookmark
     function removeBookmark() {
         const data = {
             book_id: bookId,
@@ -183,57 +319,54 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(data),
         })
-        .then((response) => response.json())
-        .then((data) => {
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
             if (data.status === 'success') {
                 alert('Обележивач је успешно уклоњен.');
                 isBookmarked = false;
-                changeButton();
+                updateBookmarkButton();
             } else {
-                alert(`Грешка: ${data.message}`);
+                throw new Error(data.message || 'Unknown error');
             }
         })
-        .catch((error) => {
-            console.error('Грешка:', error);
+        .catch(error => {
+            console.error('Error:', error);
             alert('Дошло је до грешке приликом уклањања обележивача.');
         });
     }
 
-    // Function to update the button based on bookmark status
-    function changeButton() {
-        const buttonElement = document.getElementById('save-or-remove-bookmark-btn');
-        if (buttonElement) {
+    function updateBookmarkButton() {
+        if (bookmarkBtn) {
             if (isBookmarked) {
-                buttonElement.innerHTML = `<i class='fas fa-bookmark'></i>`;
-                buttonElement.title = 'Уклони обележивач';
+                bookmarkBtn.innerHTML = `<i class='fas fa-bookmark'></i>`;
+                bookmarkBtn.title = 'Уклони обележивач';
             } else {
-                buttonElement.innerHTML = `<i class='far fa-bookmark'></i>`;
-                buttonElement.title = 'Додај обележивач';
+                bookmarkBtn.innerHTML = `<i class='far fa-bookmark'></i>`;
+                bookmarkBtn.title = 'Додај обележивач';
             }
         }
     }
 
-    // Event listeners
-    if (commentBtn) {
-        commentBtn.addEventListener('click', showCommentForm);
-    }
+// Initialize buttons
+updateCommentButton();
+updateBookmarkButton();
 
-    if (quoteBtn) {
-        quoteBtn.addEventListener('click', copyVerseToClipboard);
-    }
+// Event listeners
+if (commentBtn) {
+    commentBtn.addEventListener('click', showCommentForm);
+}
 
-    const bookmarkBtn = document.getElementById('save-or-remove-bookmark-btn');
-    if (bookmarkBtn) {
-        bookmarkBtn.addEventListener('click', function (e) {
-            if (isBookmarked) {
-                removeBookmark();
-            } else {
-                saveBookmark();
-            }
-            e.target.blur(); // Remove focus
-        });
-    }
+if (quoteBtn) {
+    quoteBtn.addEventListener('click', copyVerseToClipboard);
+}
 
-    // Change button initially based on the first fetched verse
-    changeButton();
+if (bookmarkBtn) {
+    bookmarkBtn.addEventListener('click', function (e) {
+        toggleBookmark();
+        e.target.blur();
+    });
+}
 });

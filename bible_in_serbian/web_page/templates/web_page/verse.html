@@ -34,6 +34,7 @@
 {{ verse.chapter|json_script:"chapter" }}
 {{ verse.verse_number|json_script:"verse_number" }}
 {{ is_bookmarked|json_script:"is_bookmarked" }}
+{{ comment_text|json_script:"comment_text" }}
 <script type="module" src="{% static 'web_page/viewverse.js' %}"></script>
 
 {% endblock %}

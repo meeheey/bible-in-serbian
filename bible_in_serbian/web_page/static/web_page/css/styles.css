@@ -628,3 +628,28 @@ select:focus {
     display: flex;
     gap: 10px;
 }
+
+.existing-comment {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+    white-space: pre-wrap; /* Preserves line breaks and spaces */
+    word-wrap: break-word; /* Breaks long words if needed */
+}
+
+.comment-actions {
+    margin-top: 10px;
+}
+
+/* If you want to style the edit form textarea similarly */
+#comment-text {
+    padding: 15px;
+    width: 100%;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    min-height: 100px;
+    font-family: inherit;
+}

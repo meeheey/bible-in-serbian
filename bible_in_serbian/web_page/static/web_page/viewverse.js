@@ -360,7 +360,10 @@ if (commentBtn) {
 }
 
 if (quoteBtn) {
-    quoteBtn.addEventListener('click', copyVerseToClipboard);
+    quoteBtn.addEventListener('click', function(e) {
+    copyVerseToClipboard();
+    e.target.blur();
+    });
 }
 
 if (bookmarkBtn) {

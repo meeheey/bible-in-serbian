@@ -30,7 +30,9 @@ def fetch_random_verse(request):
         "book_acronym": random_verse.book.acronym,
         "book_id": random_verse.book.id,
         "chapter": random_verse.chapter,
+        "chapter_mask": random_verse.chapter_mask,
         "verse_number": random_verse.verse_number,
+        "verse_number_mask": random_verse.verse_number_mask,
         "verse": random_verse.verse,
         "is_bookmarked": exists
     }

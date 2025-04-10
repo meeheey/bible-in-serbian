@@ -128,19 +128,31 @@ function fetchVerses(bookId, targetDivId) {
     .then(data => {
         const versesHtml = data.verses.map(verse => {
             if (verse.verse_number === 0) {
-                // Format for heading verses
-                return `<div class="verse" data-book-id="${bookId}" data-book-acronym="${verse.book_acronym}" data-chapter="${verse.chapter}" data-chapter-mask="${verse.chapter_mask}" data-verse-number="${verse.verse_number}" data-verse-number-mask="${verse.verse_number_mask}">
-                            <strong>${verse.chapter_mask}</strong> <em>${verse.verse}</em>
-                        </div>`;
+                const displayReference = `${verse.chapter_mask}`;
+    
+            const verseUrl = `/books/${bookId}/${verse.chapter}/${verse.verse_number}/`;
+    
+            return `<div class="verse" data-book-id="${bookId}" data-book-acronym="${verse.book_acronym}" data-chapter="${verse.chapter}" data-chapter-mask="${verse.chapter_mask}">
+                <strong>
+                    <a href="${verseUrl}">${displayReference}</a>
+                </strong> 
+                                    ${verse.verse}
+
+            </div>`;
             } else {
+                const displayReference = 
+                    verse.chapter_mask && verse.verse_number_mask && verse.chapter_mask !== '' && verse.verse_number_mask !== ''
+                        ? `${verse.chapter_mask}:${verse.verse_number_mask}`
+                        : `${verse.chapter_mask || ''}${verse.verse_number_mask || ''}`;
+        
+                const verseUrl = `/books/${bookId}/${verse.chapter}/${verse.verse_number}/`;
+        
                 return `<div class="verse" data-book-id="${bookId}" data-book-acronym="${verse.book_acronym}" data-chapter="${verse.chapter}" data-chapter-mask="${verse.chapter_mask}" data-verse-number="${verse.verse_number}" data-verse-number-mask="${verse.verse_number_mask}">
-            <strong>
-                ${verse.chapter_mask && verse.verse_number_mask && verse.chapter_mask !== '' && verse.verse_number_mask !== '' 
-                    ? `${verse.chapter_mask}:${verse.verse_number_mask}` 
-                    : `${verse.chapter_mask || ''}${verse.verse_number_mask || ''}`}
-            </strong>
-            ${verse.verse}
-        </div>`;
+                    <strong>
+                        <a href="${verseUrl}">${displayReference}</a>
+                    </strong>
+                    ${verse.verse}
+                </div>`;
 
             }
         }).join('');

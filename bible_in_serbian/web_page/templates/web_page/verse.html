@@ -3,7 +3,7 @@
 
 {% block body %}
 
-<h2>Надахни ме</h2>
+<h2 id="verse-reference">{{ verse.book.acronym }} {{ verse.chapter_mask }}{% if verse.verse_number != 0 %}{% if verse.verse_number_mask %}:{% endif %}{{ verse.verse_number_mask }}{% endif %}</h2>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -12,7 +12,6 @@
                 <div class="card-body text-center">
                     <div id="verse-container">
                         <p class="lead" id="verse-text">{{ verse.verse }}</p>
-                        <p id="verse-reference" style="color: #007bff;">{{ verse.book.acronym }} {{ verse.chapter_mask }}{% if verse.verse_number != 0 %}{% if verse.verse_number_mask %}:{% endif %}{{ verse.verse_number_mask }}{% endif %}</p>
                     </div>
                     <button id="comment-btn" class="btn btn-primary">
                         <i class='fas fa-comment'></i>

@@ -12,7 +12,7 @@
                 <button class="book-btn bookmark">
                     <i class="fas fa-bookmark"></i>
                 </button>
-                <a href="{% url 'show_book' book_id=bookmark.verse.book.id %}" class="book-link">
+                <a href="{% url 'view_verse' book_id=bookmark.verse.book.id chapter=bookmark.verse.chapter verse_number=bookmark.verse.verse_number %}" class="book-link">
                     <div class="book-acronym unselectable">
                         {{ bookmark.verse.book.acronym }} {{ bookmark.verse.chapter_mask }}{% if bookmark.verse.verse_number != 0 %}{% if bookmark.verse.verse_number_mask %}:{% endif %} {{ bookmark.verse.verse_number_mask }}{% endif %}
                     </div>

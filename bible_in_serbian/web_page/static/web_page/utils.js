@@ -1,6 +1,15 @@
 // utils.js
+const csrfToken = getCookie('csrftoken');
 
-// Function to get a cookie by name
+// ======================
+//  Core Utility Functions
+// ======================
+
+/**
+ * Gets cookie by name
+ * @param {string} name - Cookie name
+ * @returns {string|null} Cookie value
+ */
 export function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -16,8 +25,51 @@ export function getCookie(name) {
     return cookieValue;
 }
 
-// Function to fetch comments for a book
-export function fetchComments(bookId, targetDivId, csrfToken) {
+/**
+ * Gets currently selected verse details
+ * @returns {object|null} Verse details or null if none selected
+ */
+export function getSelectedVerse() {
+    const selectedElement = document.querySelector('.verse.selected');
+    if (selectedElement) {
+        return {
+            bookId: selectedElement.dataset.bookId,
+            chapter: selectedElement.dataset.chapter,
+            verseNumber: selectedElement.dataset.verseNumber,
+        };
+    }
+    return null;
+}
+
+/**
+ * Finds the appropriate container div ID for a verse
+ * @param {string} bookId 
+ * @returns {string} ID of the target div
+ */
+export function getTargetDivIdForVerse(bookId) {
+    if (document.getElementById('verses')) {
+        return 'verses';
+    } else if (document.getElementById('verses1') && 
+               document.querySelector(`#verses1 .verse[data-book-id="${bookId}"]`)) {
+        return 'verses1';
+    } else if (document.getElementById('verses2') && 
+               document.querySelector(`#verses2 .verse[data-book-id="${bookId}"]`)) {
+        return 'verses2';
+    }
+    return 'verses';
+}
+
+// ======================
+//  Comment Functions
+// ======================
+
+/**
+ * Fetches comments for a specific book
+ * @param {string} bookId 
+ * @param {string} targetDivId 
+ * @returns {Promise}
+ */
+export function fetchComments(bookId, targetDivId) {
     return fetch(`/fetch/${bookId}/comments/`, {
         headers: {
             'X-CSRFToken': csrfToken
@@ -30,12 +82,12 @@ export function fetchComments(bookId, targetDivId, csrfToken) {
         return response.json();
     })
     .then(data => {
-        // First remove all existing comment icons
+        // Remove all existing comment icons
         document.querySelectorAll(`#${targetDivId} .verse .fa-comment`).forEach(icon => {
             icon.remove();
         });
 
-        // Add new comment icons
+        // Add new comment icons if comments exist
         if (data.comments && data.comments.length > 0) {
             data.comments.forEach(comment => {
                 const verseElement = document.querySelector(
@@ -55,8 +107,17 @@ export function fetchComments(bookId, targetDivId, csrfToken) {
     });
 }
 
-// Function to fetch bookmarks for a book
-export function fetchBookmarks(bookId, targetDivId, csrfToken) {
+// ======================
+//  Bookmark Functions
+// ======================
+
+/**
+ * Fetches bookmarks for a specific book
+ * @param {string} bookId 
+ * @param {string} targetDivId 
+ * @returns {Promise}
+ */
+export function fetchBookmarks(bookId, targetDivId) {
     return fetch(`/fetch/${bookId}/bookmarks/`, {
         headers: {
             'X-CSRFToken': csrfToken
@@ -69,12 +130,12 @@ export function fetchBookmarks(bookId, targetDivId, csrfToken) {
         return response.json();
     })
     .then(data => {
-        // First remove all existing bookmark icons
+        // Remove all existing bookmark icons
         document.querySelectorAll(`#${targetDivId} .verse .fa-bookmark`).forEach(icon => {
             icon.remove();
         });
 
-        // Add new bookmark icons
+        // Add new bookmark icons if bookmarks exist
         if (data.bookmarks && data.bookmarks.length > 0) {
             data.bookmarks.forEach(bookmark => {
                 const verseElement = document.querySelector(
@@ -94,35 +155,135 @@ export function fetchBookmarks(bookId, targetDivId, csrfToken) {
     });
 }
 
-// Function to get the selected verse
-export function getSelectedVerse() {
-    const selectedElement = document.querySelector('.verse.selected');
-    if (selectedElement) {
-        return {
-            bookId: selectedElement.dataset.bookId,
-            chapter: selectedElement.dataset.chapter,
-            verseNumber: selectedElement.dataset.verseNumber,
-        };
-    }
-    return null;
+// ======================
+//  Annotation Refresh
+// ======================
+
+/**
+ * Refetches both comments and bookmarks for a verse
+ * @param {string} bookId 
+ * @param {string} chapter 
+ * @param {string} verseNumber 
+ * @param {string} targetDivId 
+ * @returns {Promise}
+ */
+export function refetchVerseAnnotations(bookId, chapter, verseNumber, targetDivId) {
+    return Promise.all([
+        fetchComments(bookId, targetDivId),
+        fetchBookmarks(bookId, targetDivId)
+    ]);
 }
 
-// Function to get the target div ID for a verse
-export function getTargetDivIdForVerse(bookId) {
-    if (document.getElementById('verses')) {
-        return 'verses';
-    } else if (document.getElementById('verses1') && 
-               document.querySelector(`#verses1 .verse[data-book-id="${bookId}"]`)) {
-        return 'verses1';
-    } else if (document.getElementById('verses2') && 
-               document.querySelector(`#verses2 .verse[data-book-id="${bookId}"]`)) {
-        return 'verses2';
-    }
-    return 'verses';
+// ======================
+//  Verse Fetching
+// ======================
+
+/**
+ * Fetches verses for a specific book
+ * @param {string} bookId 
+ * @param {string} targetDivId 
+ * @returns {Promise}
+ */
+export function fetchVerses(bookId, targetDivId) {
+    return fetch(`/fetch/${bookId}/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        const versesHtml = data.verses.map(verse => {
+            if (verse.verse_number === 0) {
+                const displayReference = `${verse.chapter_mask}`;
+                const verseUrl = `/books/${bookId}/${verse.chapter}/${verse.verse_number}/`;
+                
+                return `<div class="verse" data-book-id="${bookId}" data-book-acronym="${verse.book_acronym}" data-chapter="${verse.chapter}" data-chapter-mask="${verse.chapter_mask}" data-verse-number="${verse.verse_number}" data-verse-number-mask="${verse.verse_number_mask}">
+                    <strong><a href="${verseUrl}">${displayReference}</a></strong>
+                    <em>${verse.verse}</em>
+                </div>`;
+            } else {
+                const displayReference = 
+                    verse.chapter_mask && verse.verse_number_mask && verse.chapter_mask !== '' && verse.verse_number_mask !== ''
+                        ? `${verse.chapter_mask}:${verse.verse_number_mask}`
+                        : `${verse.chapter_mask || ''}${verse.verse_number_mask || ''}`;
+                
+                const verseUrl = `/books/${bookId}/${verse.chapter}/${verse.verse_number}/`;
+                
+                return `<div class="verse" data-book-id="${bookId}" data-book-acronym="${verse.book_acronym}" data-chapter="${verse.chapter}" data-chapter-mask="${verse.chapter_mask}" data-verse-number="${verse.verse_number}" data-verse-number-mask="${verse.verse_number_mask}">
+                    <strong><a href="${verseUrl}">${displayReference}</a></strong>
+                    ${verse.verse}
+                </div>`;
+            }
+        }).join('');
+        
+        document.getElementById(targetDivId).innerHTML = versesHtml;
+        
+        // Fetch comments and bookmarks after verses are loaded
+        return Promise.all([
+            fetchComments(bookId, targetDivId),
+            fetchBookmarks(bookId, targetDivId)
+        ]);
+    })
+    .catch(error => {
+        console.error('Error fetching verses:', error);
+        document.getElementById(targetDivId).innerHTML = `<p style="color: red;">Error loading verses: ${error.message}</p>`;
+    });
 }
 
-// Function to refetch comments and bookmarks
-export function refetchVerseAnnotations(bookId, chapter, verseNumber, targetDivId, csrfToken) {
-    fetchComments(bookId, targetDivId, csrfToken);
-    fetchBookmarks(bookId, targetDivId, csrfToken);
+// ======================
+//  Verse Filtering
+// ======================
+
+/**
+ * Filters verses based on search text
+ * @param {string} targetDivId 
+ * @param {string} searchText 
+ */
+export function filterVerses(targetDivId, searchText) {
+    const verses = document.querySelectorAll(`#${targetDivId} .verse`);
+    const searchTerms = searchText.toLowerCase().split(/\s+/);
+    const showChapter = document.getElementById('showChapter').checked;
+
+    function matchesSearch(verseText, terms) {
+        return terms.every(term => {
+            if (term.startsWith('!')) {
+                return !verseText.includes(term.slice(1));
+            }
+            if (term.includes('&')) {
+                return term.split('&').every(t => verseText.includes(t));
+            }
+            if (term.includes('|')) {
+                return term.split('|').some(t => verseText.includes(t));
+            }
+            return verseText.includes(term);
+        });
+    }
+
+    const chapters = new Set();
+    const matchingChapters = new Set();
+
+    verses.forEach(verse => {
+        const chapter = verse.getAttribute('data-chapter');
+        const verseText = verse.textContent.toLowerCase();
+
+        chapters.add(chapter);
+        if (matchesSearch(verseText, searchTerms)) {
+            matchingChapters.add(chapter);
+        }
+    });
+
+    verses.forEach(verse => {
+        const chapter = verse.getAttribute('data-chapter');
+        const verseText = verse.textContent.toLowerCase();
+        const matches = matchesSearch(verseText, searchTerms);
+
+        verse.style.display = showChapter
+            ? (matchingChapters.has(chapter) ? '' : 'none')
+            : (matches ? '' : 'none');
+    });
 }

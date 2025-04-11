@@ -5,7 +5,7 @@
 <h2 class="my-4 unselectable" id="bookTitle">{{ book.title }}</h2>
 
 <!-- Add a hidden element to store the book ID -->
-<div id="book-data" data-book-id="{{ book.id }}"></div>
+{{ book.id|json_script:"book_id" }}
 
 <div class="controls">
     <!-- Add checkbox for showing entire chapter -->
@@ -46,7 +46,7 @@
 {% endif %}
 
 <!-- Link to the external JavaScript file -->
-<script type="module" src="{% static 'web_page/scripts.js' %}"></script>
+<script type="module" src="{% static 'web_page/book.js' %}"></script>
 {% if user.is_authenticated %}
 <script type="module" src="{% static 'web_page/toolbox.js' %}"></script>
 {% endif %}

@@ -3,8 +3,7 @@ import {
     fetchComments, 
     fetchBookmarks, 
     getSelectedVerse, 
-    getTargetDivIdForVerse, 
-    refetchVerseAnnotations 
+    getTargetDivIdForVerse
 } from './utils.js';
 
 const box = document.getElementById('floating-box');

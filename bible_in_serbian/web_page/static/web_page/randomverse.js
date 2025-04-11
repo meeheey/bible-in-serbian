@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to fetch and display a random verse
     function fetchRandomVerse() {
-        fetch('/fetch/random_verse/')  // Update this URL to match your URL pattern
+        fetch('/fetch/random_verse/')
             .then(response => response.json())
             .then(data => {
                 verse = data.random_verse;  // Store the verse data in the global variable
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (verse.verse_number_mask === '') {
                     anchor.textContent = `${verse.book_acronym} ${verse.chapter_mask}`;
-                    anchor.href = `/books/${verse.book_id}/${verse.chapter}/${verse.verse_number}/`;  // Fallback to verse 1
+                    anchor.href = `/books/${verse.book_id}/${verse.chapter}/${verse.verse_number}/`;
                 } else {
                     anchor.textContent = `${verse.book_acronym} ${verse.chapter_mask}:${verse.verse_number_mask}`;
                     anchor.href = `/books/${verse.book_id}/${verse.chapter}/${verse.verse_number}/`;

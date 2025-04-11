@@ -1,12 +1,7 @@
 import { 
     getCookie,
     fetchVerses,
-    filterVerses,
-    fetchComments, 
-    fetchBookmarks, 
-    getSelectedVerse, 
-    getTargetDivIdForVerse, 
-    refetchVerseAnnotations 
+    filterVerses
 } from './utils.js';
 
 // Declare csrfToken at the top of the script

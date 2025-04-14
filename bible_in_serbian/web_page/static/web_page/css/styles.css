@@ -178,9 +178,54 @@ a:hover {
 /* ==================== */
 .controls {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 20px;
+    align-items: center; /* This ensures all items are vertically centered */
+}
+
+/* Style for the checkbox container to align properly */
+.controls > div:nth-child(3) {
+    display: flex;
     align-items: center;
+    white-space: nowrap; /* Prevents wrapping of checkbox label */
+}
+
+/* Style for the checkbox label */
+.controls > div:nth-child(3) label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 200px; /* Give it some minimum width */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: row; /* Keep items in a row on mobile */
+        flex-wrap: wrap; /* Allow wrapping if needed */
+    }
+    
+    .controls > div {
+        margin-bottom: 10px;
+    }
+    
+    /* Make search container full width but keep checkbox inline */
+    .search-container {
+        width: 100%;
+        order: 1; /* Move search to bottom if you prefer */
+    }
+    
+    /* Optional: if you want checkbox and search on same line */
+    .controls > div:nth-child(3) {
+        order: 0;
+        margin-right: 10px;
+    }
 }
 
 /* Dropdown Styles */
@@ -295,6 +340,17 @@ select:focus {
     overflow: hidden; 
 }
 
+@media (max-width: 768px) {
+    .verses-container {
+        flex-direction: column;
+    }
+    
+    .verses-container > div {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
 #verses {
     flex: 1;
     overflow-y: auto; 
@@ -376,6 +432,7 @@ select:focus {
     cursor: move;
     font-family: 'Roboto', sans-serif;
     z-index: 1000; /* Ensure it stays on top */
+    transition: all 0.3s ease;
 }
 
 #floating-box #header {
@@ -601,6 +658,11 @@ select:focus {
     white-space: nowrap;
 }
 
+
+/* ============= */
+/* Comment form */
+/* ============= */
+
 .comment-form {
     background-color: #ffffff;
     padding: 15px;
@@ -644,7 +706,6 @@ select:focus {
     margin-top: 10px;
 }
 
-/* If you want to style the edit form textarea similarly */
 #comment-text {
     padding: 15px;
     width: 100%;

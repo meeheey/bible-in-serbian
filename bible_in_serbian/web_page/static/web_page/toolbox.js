@@ -8,11 +8,33 @@ import {
 
 const box = document.getElementById('floating-box');
 
-// Set the initial position of the box
-box.style.position = 'fixed';
-box.style.top = '10px';
-box.style.left = '10px';
+function positionToolbox() {
+    box.style.position = 'fixed';
+    
+    if (window.innerWidth <= 768) { // Mobile
+        box.style.bottom = '10px';
+        box.style.left = '10px';
+        box.style.top = 'auto';
+        box.style.right = 'auto';
+    } else { // Desktop
+        box.style.top = '10px';
+        box.style.left = '10px';
+        box.style.bottom = 'auto';
+        box.style.right = 'auto';
+    }
+}
 
+// Set initial position
+positionToolbox();
+
+// Debounce the resize event to improve performance
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(positionToolbox, 100);
+});
+
+// Toolbox state variables
 let isDragging = false;
 let offsetX, offsetY;
 let isHighlightActive = false;

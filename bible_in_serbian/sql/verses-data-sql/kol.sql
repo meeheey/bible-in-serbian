@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (61, 1, 0, 'Захвалност Богу за вјеру, љубав и наду. Слава Христа као Творца и Главе тијела Цркве.'),
 (61, 1, 1, 'Павле, по вољи Божијој апостол Исуса Христа, и брат Тимотеј,'),

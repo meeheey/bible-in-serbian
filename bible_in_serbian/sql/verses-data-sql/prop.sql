@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (27, 1, 0, 'Све земаљско је таштина.'),
 (27, 1, 1, 'Ријечи проповједника, сина Давидова, цара у Јерусалиму.'),

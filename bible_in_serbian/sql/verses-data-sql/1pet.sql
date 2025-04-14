@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (70, 1, 0, 'Поздрав. Захвалност Богу за велику наду и свети и блажени живот који Он дарова вјерујућима.'),
 (70, 1, 1, 'Петар, апостол Исуса Христа, изабранима који странствују у расијању по Понту, Галатији, Кападокији, Азији и Витинији;'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (62, 1, 0, 'Поздрав. Захвалност Богу за примјерну вјеру Солуњана у Јеванђеље.'),
 (62, 1, 1, 'Павле и Силван и Тимотеј Цркви Солунској која је у Богу Оцу и Господу Исусу Христу: Благодат вам и мир од Бога Оца нашега и Господа Исуса Христа.'),

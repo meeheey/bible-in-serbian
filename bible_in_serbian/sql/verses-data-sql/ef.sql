@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (59, 1, 0, 'Химна захвалности Богу Оцу, за благодат у Христу и Духу. Молитва Апостолова. Христос глава тијела Цркве.'),
 (59, 1, 1, 'Павле, апостол Исуса Христа по вољи Божијој, светима који су у Ефесу, и вјернима у Христу Исусу:'),

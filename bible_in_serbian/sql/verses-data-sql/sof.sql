@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (46, 1, 0, 'Дан гњева.'),
 (46, 1, 1, 'Ријеч Господња која дође Софонији, сину Хусија сина Годолије сина Амарије сина Језекијина, за времена Јосије, сина Амонова, цара Јудина.'),

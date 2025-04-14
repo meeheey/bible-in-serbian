@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (65, 1, 0, 'Захвалност Богу за вјеру Тимотејеву и подстицај дара у њему: да се не постиди страдања за Христа и да сачува залог Духа.'),
 (65, 1, 1, 'Павле, апостол Христа Исуса по вољи Божијој, према обећању живота у Христу Исусу,'),

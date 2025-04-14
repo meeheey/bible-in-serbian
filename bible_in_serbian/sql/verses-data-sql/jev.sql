@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (68, 1, 0, 'Христос је Син Божији и виши од анђела.'),
 (68, 1, 1, 'Бог који је из давнине много пута и разним начинима говорио оцима преко Пророка,'),

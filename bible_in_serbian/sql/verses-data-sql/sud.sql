@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (7, 1, 0, 'Племе Јудино започиње рат послије Исусове смрти. Сви Хананци су протјерани.'),
 (7, 1, 1, 'А по смрти Исусовој упиташе синови Израиљеви Господа говорећи: Ко ће између нас ићи први на Хананеје да се бије с њима?'),

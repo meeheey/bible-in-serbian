@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (49, 1, 0, 'Израиљева незахвалност. Кажњавање свештеника и народа због незаконите жртве.'),
 (49, 1, 1, 'Бреме ријечи Господње Израиљу преко Малахије.'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (66, 1, 0, 'Порука Титу о постављању свештеника и о врлинама епископа. Пороци неких Крићана.'),
 (66, 1, 1, 'Павле слуга Божији и апостол Исуса Христа по вјери изабраних Божијих и познању истине побожности,'),

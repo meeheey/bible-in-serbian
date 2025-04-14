@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (40, 1, 0, 'О казни сусједа Израиљевих.'),
 (40, 1, 1, 'Ријечи Амоса који бијаше између пастира из Текује, што видје за Израиља за времена Озије, цара Јудина, и за времена Јеровоама, сина Јоасова, цара Израиљева, двије године прије труса.'),

@@ -62,7 +62,7 @@ def transform_to_sql(input_file_path, book_id):
 
     output_file_path = os.path.splitext(input_file_path)[0] + '.sql'
     with open(output_file_path, 'w', encoding='utf-8') as file:
-        file.write("INSERT INTO verses(book_id, chapter, verse_number, verse)\nVALUES\n")
+        file.write("INSERT INTO verses(book_id, chapter, chapter_mask, verse_number, verse_number_mask, verse)\nVALUES\n")
         file.write(",\n".join(sql_commands) + ";")
 
     print(f"SQL commands have been written to {output_file_path}")

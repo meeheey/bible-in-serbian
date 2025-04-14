@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (14, 1, 0, 'Соломон приноси жртве у Гаваону. Бог се јавља Соломону и, на његову молитву, даје му мудрост и богатство.'),
 (14, 1, 1, 'И Соломон, син Давидов, утврди се у царству свом, и Господ Бог његов бјеше с њим и узвиси га веома.'),

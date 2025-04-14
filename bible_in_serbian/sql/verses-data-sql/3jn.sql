@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (74, 1, 0, 'Поздрав Гају. Радост због хришћанског живота и гостопримства. Диотреф и Димитрије.'),
 (74, 1, 1, 'Старјешина Гају љубљеноме, којега ја заиста љубим.'),

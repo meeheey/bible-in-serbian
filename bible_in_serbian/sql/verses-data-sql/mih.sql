@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (43, 1, 0, 'Опустошење Јуде и Израиља због идолопоклонства.'),
 (43, 1, 1, 'Ријеч Господња која дође Михеју Моресећанину за времена Јоатама, Ахаза и Језекије, царева Јудинијех, што видје за Самарију и за Јерусалим.'),

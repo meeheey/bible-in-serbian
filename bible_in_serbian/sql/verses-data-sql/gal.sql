@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (58, 1, 0, 'Поздрав. Јеванђеље Христово не може бити друго од богооткривенога.'),
 (58, 1, 1, 'Павле, апостол не од људи ни преко човјека, него кроз Исуса Христа и Бога Оца који га васкрсе из мртвих,'),

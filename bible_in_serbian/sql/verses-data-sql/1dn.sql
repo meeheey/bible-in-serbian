@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (13, 1, 0, 'Списак праотаца од Адама до Исака. Синови Исавови и едомски цареви.'),
 (13, 1, 1, 'Адам, Сит, Енос,'),

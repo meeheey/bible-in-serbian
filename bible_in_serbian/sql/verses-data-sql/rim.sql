@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (55, 1, 0, 'Увод. Јеванђеље о Христу је сила Божија на спасење свакоме који вјерује. О истини, слави и правди Божијој и о гњеву на безбожност.'),
 (55, 1, 1, 'Павле, слуга Исуса Христа, позвани апостол, изабран за јеванђеље Божије,'),

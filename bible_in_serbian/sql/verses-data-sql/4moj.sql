@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (4, 1, 0, 'Бројање људи способних за борбу.'),
 (4, 1, 1, 'Још рече Господ Мојсију у пустињи Синајској у шатору од састанка први дан другога мјесеца друге године по изласку њихову из земље Мисирске, говорећи:'),

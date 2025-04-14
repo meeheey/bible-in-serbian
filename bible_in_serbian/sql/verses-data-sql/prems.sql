@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (29, 1, 0, 'Тражити Бога у простоти срца. Дух Господњи је испунио васељену. Ко има праведност и премудрост.'),
 (29, 1, 1, 'Заволите праведност, судије земаљске, размишљајте о Господу, у доброти и простоти срца тражите Га.'),

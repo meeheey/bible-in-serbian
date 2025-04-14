@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (54, 1, 0, 'Увод. Вазнесење Христово на небо. Молитва апостола и избор Матије за апостола.'),
 (54, 1, 1, 'Прву ти књигу написах, о Теофиле, о свему што поче Исус и творити и учити'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (33, 1, 0, 'Јерусалим опустошен и осрамоћен тужи и моли за помоћ.'),
 (33, 1, 1, 'Како сједи сам, поста као удовица, град који бјеше пун народа! Велик међу народима, глава међу земљама потпаде под данак!'),

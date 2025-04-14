@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (69, 1, 0, 'Поздрав. О искушењима и гријеху. Примање и извршавање ријечи Божије.'),
 (69, 1, 1, 'Јаков, слуга Бога и Господа Исуса Христа, поздравља дванаест племена расијаних по свијету.'),

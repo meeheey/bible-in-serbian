@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (8, 1, 0, 'Рута одлази са Нојемином у Витлејем.'),
 (8, 1, 1, 'А у оно вријеме кад суђаху судије би глад у земљи; и један човјек из Витлејема Јудина отиде да живи као дошљак у земљи Моавској са женом својом и са два сина своја.'),

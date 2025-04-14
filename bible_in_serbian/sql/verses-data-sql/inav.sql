@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (6, 1, 0, 'Бог бодри Исуса у његовом позиву. Народ му обећава послушност.'),
 (6, 1, 1, 'А по смрти Мојсија, слуге Господњега, рече Господ Исусу сину Навину, слузи Мојсијеву, говорећи:'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (44, 1, 0, 'Божије величанство против Асирије.'),
 (44, 1, 1, 'Бреме Ниневији. Књига од утваре Наума Елкошанина.'),

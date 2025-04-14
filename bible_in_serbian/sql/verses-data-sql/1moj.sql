@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (1, 1, 0, 'Стварање свијета. Човјек обличје Божије.'),
 (1, 1, 1, 'У почетку створи Бог небо и земљу.'),

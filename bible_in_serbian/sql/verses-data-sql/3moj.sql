@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (3, 1, 0, 'Закон о жртвама паљеницама.'),
 (3, 1, 1, 'И викну Господ Мојсија, и рече му из шатора од састанка говорећи:'),

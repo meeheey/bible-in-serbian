@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (32, 1, 0, 'Јеремија позван за пророка.'),
 (32, 1, 1, 'Ријечи Јеремије сина Хелкијина, између свештеника који бијаху у Анатоту у земљи Венијаминовој,'),

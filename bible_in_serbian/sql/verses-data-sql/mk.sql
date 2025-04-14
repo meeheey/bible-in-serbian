@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (51, 1, 0, 'Проповијед Јована Крститеља. Исусово Крштење. Кушање у пустињи. Проповијед јеванђеља о Царству Божијем и Позив првих ученика. Лијечење болесника и губавога.'),
 (51, 1, 1, 'Почетак јеванђеља Исуса Христа, Сина Божијега.'),

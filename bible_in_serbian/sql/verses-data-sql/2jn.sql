@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (73, 1, 0, 'Поздрав. Дјеца Цркве ходе у љубави. Чувати се лажних учитеља.'),
 (73, 1, 1, 'Старјешина изабраној госпођи и дјеци њезиној, коју ја волим у истини, и не само ја, него и сви који су познали истину,'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (17, 1, 0, 'Немијина молитва због тужног стања Јудеје и Јерусалима (445. пре Христа).'),
 (17, 1, 1, 'Ријечи Немије, сина Ахалијина. Мјесеца Хислева године двадесете, кад бијах у Сусану граду,'),

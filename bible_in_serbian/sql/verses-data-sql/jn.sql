@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (53, 1, 0, 'О Богу Логосу као творцу свијета и даваоцу живота. Оваплоћење Логоса. Свједочанство Јована Крститеља о Христу. Први ученици Исусови.'),
 (53, 1, 1, 'У почетку бјеше Логос (Ријеч), и Логос бјеше у Бога, и Логос бјеше Бог.'),

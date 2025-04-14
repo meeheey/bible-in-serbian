@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (28, 1, 0, 'Пријатељева и пријатељичина љубав.'),
 (28, 1, 1, 'Соломонова пјесма над пјесмама.'),

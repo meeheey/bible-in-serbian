@@ -14,42 +14,43 @@ CREATE TABLE verses(
     FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
--- For INSERT: Only sets masks if they're NULL (keeps empty strings)
-CREATE TRIGGER fill_masks_on_insert
-BEFORE INSERT ON verses
+CREATE VIEW verses_view AS
+SELECT * FROM verses;
+
+CREATE TRIGGER verses_view_insert
+INSTEAD OF INSERT ON verses_view
 FOR EACH ROW
-WHEN (NEW.chapter_mask IS NULL OR NEW.verse_number_mask IS NULL)
 BEGIN
-    UPDATE verses
-    SET
-        chapter_mask = CASE 
-            WHEN NEW.chapter_mask IS NULL THEN CAST(NEW.chapter AS TEXT)
-            ELSE NEW.chapter_mask  -- Leaves empty strings untouched
-        END,
-        verse_number_mask = CASE 
-            WHEN NEW.verse_number_mask IS NULL THEN CAST(NEW.verse_number AS TEXT)
-            ELSE NEW.verse_number_mask  -- Leaves empty strings untouched
-        END
-    WHERE rowid = NEW.rowid;
+    INSERT INTO verses (book_id, chapter, verse_number, verse,
+                        chapter_mask, verse_number_mask)
+    VALUES (
+        NEW.book_id,
+        NEW.chapter,
+        NEW.verse_number,
+        NEW.verse,
+        COALESCE(NEW.chapter_mask, CAST(NEW.chapter AS TEXT)),
+        COALESCE(NEW.verse_number_mask, CAST(NEW.verse_number AS TEXT))
+    );
 END;
 
--- For UPDATE: Only updates masks if chapter/verse_number changes AND masks are NULL
-CREATE TRIGGER fill_masks_on_update
-BEFORE UPDATE ON verses
+CREATE TRIGGER verses_view_update
+INSTEAD OF UPDATE ON verses_view
 FOR EACH ROW
-WHEN (NEW.chapter != OLD.chapter OR NEW.verse_number != OLD.verse_number) AND
-     (NEW.chapter_mask IS NULL OR NEW.verse_number_mask IS NULL)
 BEGIN
     UPDATE verses
     SET
-        chapter_mask = CASE 
-            WHEN NEW.chapter_mask IS NULL THEN CAST(NEW.chapter AS TEXT)
-            ELSE NEW.chapter_mask  -- Leaves empty strings untouched
-        END,
-        verse_number_mask = CASE 
-            WHEN NEW.verse_number_mask IS NULL THEN CAST(NEW.verse_number AS TEXT)
-            ELSE NEW.verse_number_mask  -- Leaves empty strings untouched
-        END
-    WHERE rowid = NEW.rowid;
+        book_id = NEW.book_id,
+        chapter = NEW.chapter,
+        verse_number = NEW.verse_number,
+        verse = NEW.verse,
+        chapter_mask = COALESCE(
+            NEW.chapter_mask,
+            CASE WHEN NEW.chapter != OLD.chapter THEN CAST(NEW.chapter AS TEXT) ELSE OLD.chapter_mask END
+        ),
+        verse_number_mask = COALESCE(
+            NEW.verse_number_mask,
+            CASE WHEN NEW.verse_number != OLD.verse_number THEN CAST(NEW.verse_number AS TEXT) ELSE OLD.verse_number_mask END
+        )
+    WHERE id = OLD.id;
 END;
 

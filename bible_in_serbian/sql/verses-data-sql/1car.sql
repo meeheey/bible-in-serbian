@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (11, 1, 0, 'Давид се жени Ависагом. Адонија полаже право на пријесто. Соломон помазан за цара.'),
 (11, 1, 1, 'А цар Давид остарје и би временит, и колико га покриваху хаљинама, не могаше се загријати.'),

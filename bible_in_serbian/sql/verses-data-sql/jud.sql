@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (75, 1, 0, 'Поздрав. Борба за вјеру светих и спасење. Лажни учитељ. Опомене вјернима.'),
 (75, 1, 1, 'Јуда, слуга Исуса Христа, а брат Јаковљев, призванима, освећенима Богом Оцем и сачуванима Исусом Христом:'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (10, 1, 0, 'Давид наређује да се погуби доносилац царског вијенца Сауловог. Његова тугованка над Саулом и Јонатаном.'),
 (10, 1, 1, 'А по смрти Сауловој, кад се Давид врати побивши Амалике и оста у Сиклагу два дана,'),

@@ -1,4 +1,4 @@
-INSERT INTO verses(book_id, chapter, verse_number, verse)
+INSERT INTO verses_view(book_id, chapter, verse_number, verse)
 VALUES
 (72, 1, 0, 'О Логосу живота. Хођење у свјетлости. Признавање своје грјешности.'),
 (72, 1, 1, 'Што бјеше од почетка, што смо чули, што смо видјели очима својима, што сагледасмо и руке наше опипаше, о Логосу (Ријечи) живота:'),

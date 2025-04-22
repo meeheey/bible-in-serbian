@@ -24,7 +24,7 @@ class Verses(models.Model):
     class Meta:
         managed = False  # Keep this if you don't want Django to manage the table
         db_table = 'verses'
-        ordering = ['chapter', 'verse_number']
+        ordering = ['book', 'chapter', 'verse_number']
 
     def __str__(self):
         return f"{self.book.acronym} {self.chapter}:{self.verse_number}"  # Add a string representation

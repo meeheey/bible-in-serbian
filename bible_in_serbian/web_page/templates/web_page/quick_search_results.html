@@ -1,0 +1,81 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block title %}Резултати претраге за "{{ query }}"{% endblock %}
+
+{% block body %}
+<h2 class="my-4 unselectable">Резултати претраге за „{{ query }}”</h2>
+
+<!-- Same controls as your original page -->
+{% if verses %}
+<div class="controls">
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Претрага стихова">
+        <button id="searchInfo" class="info-button" aria-label="Search Help">i</button>
+        <div id="searchTooltip" class="tooltip">
+            <strong>Оператори претраге:</strong><br>
+            - Користи <code>&</code> за И (нпр., <code>фарисеј&садукеј</code>).<br>
+            - Користи <code>|</code> за ИЛИ (нпр., <code>фарисеј|садукеј</code>).<br>
+            - Користи <code>!</code> за НЕ (нпр., <code>!фарисеј</code>).<br>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Verses container with same styling -->
+<div class="verses-container">
+    {% if verses %}
+        <div id="verses">
+            {% for verse in verses %}
+            <div class="verse"
+                 data-book-acronym="{{ verse.book.acronym }}" 
+                 data-book-id="{{ verse.book.id }}"
+                 data-book-acronym="{{ verse.book.acronym }}"
+                 data-chapter="{{ verse.chapter }}"
+                 data-chapter-mask="{{ verse.chapter_mask }}"
+                 data-verse-number="{{ verse.verse_number }}"
+                 data-verse-number-mask="{{ verse.verse_number_mask }}">
+                <strong>
+                    <a href="{% url 'view_verse' verse.book.id verse.chapter verse.verse_number %}">
+                        {{ verse.book.acronym }}
+                        {% if verse.verse_number == 0 %}
+                            {{ verse.chapter_mask }}
+                        {% else %}
+                            {% if verse.chapter_mask and verse.verse_number_mask %}
+                                {{ verse.chapter_mask }}:{{ verse.verse_number_mask }}
+                            {% else %}
+                                {{ verse.chapter_mask|default:"" }}{{ verse.verse_number_mask|default:"" }}
+                            {% endif %}
+                        {% endif %}
+                    </a>
+                </strong>
+                {% if verse.verse_number == 0 %}
+                    <em>{{ verse.verse }}</em>
+                {% else %}
+                    {{ verse.verse }}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нема резултата за приказ за „{{ query }}”.</p>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated %}
+<div id="floating-box">
+    <div id="header" class="unselectable">Алати</div>
+    <button id="highlight">Подвуци</button>
+    <button id="comment">Коментариши</button>
+    <button id="quote">Цитирај</button>
+    <button id="bookmark">Означи</button>
+</div>
+{% endif %}
+
+<!-- Include the same JS files as your original page -->
+<script src="{% static 'web_page/search.js' %}"></script>
+{% if user.is_authenticated %}
+<script type="module" src="{% static 'web_page/toolbox.js' %}"></script>
+{% endif %}
+
+{% endblock %}

@@ -10,6 +10,7 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path('books/<int:book_id>/', views.show_book, name='show_book'),
+    path('books/search/', views.quick_search, name='quick_search'),
     path('comparative_reading/', views.comparative_reading, name='comparative reading'),
     path('comment/<comment_id>/', views.view_comment, name="view_comment"),
     path('books/<int:book_id>/<int:chapter>/<int:verse_number>/', views.view_verse, name='view_verse'),

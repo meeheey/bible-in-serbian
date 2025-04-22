@@ -142,7 +142,7 @@ function transformBoxIntoToolbox() {
 
     document.getElementById('highlight').addEventListener('click', () => {
         isHighlightActive = !isHighlightActive;
-        alert(`Highlight functionality is ${isHighlightActive ? 'active' : 'inactive'}`);
+        alert(`Функција подвлачења је ${isHighlightActive ? 'активна' : 'неактивна'}.`);
     });
     
     document.getElementById('comment').addEventListener('click', () => {

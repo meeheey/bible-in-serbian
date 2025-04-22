@@ -74,6 +74,25 @@ def show_book(request, book_id):
         "books": books
     })
 
+def quick_search(request):
+    query = request.GET.get('q', '').strip()
+    
+    if not query:
+        return render(request, "web_page/search_results.html", {
+            "verses": [],
+            "query": query,
+            "show_controls": True
+        })
+    
+    # More efficient search using filter
+    verses = Verses.objects.filter(verse__icontains=query).select_related('book')[:100]
+    
+    return render(request, "web_page/quick_search_results.html", {
+        "verses": verses,
+        "query": query,
+        "show_controls": True  # Show the same controls as your verse page
+    })
+
 def comparative_reading(request):
     books = Books.objects.all()
     return render(request, "web_page/comparative_reading.html", {

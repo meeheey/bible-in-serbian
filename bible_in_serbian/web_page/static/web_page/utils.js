@@ -59,6 +59,152 @@ export function getTargetDivIdForVerse(bookId) {
     return 'verses';
 }
 
+/**
+ * Gets all text nodes within an element
+ * @param {HTMLElement} element 
+ * @returns {Array} Array of text nodes
+ */
+function getTextNodes(element) {
+    const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+        textNodes.push(node);
+    }
+    
+    return textNodes;
+}
+
+// ======================
+//  Highlight Functions
+// ======================
+
+/**
+ * Fetches highlights for a specific book
+ * @param {string} bookId 
+ * @param {string} targetDivId 
+ * @returns {Promise}
+ */
+export function fetchHighlights(bookId, targetDivId) {
+    return fetch(`/fetch/${bookId}/highlights/`, {
+        headers: {
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove existing highlights first
+        document.querySelectorAll(`#${targetDivId} .verse .highlight`).forEach(hl => {
+            const textNode = document.createTextNode(hl.textContent);
+            hl.parentNode.replaceChild(textNode, hl);
+        });
+
+        // Apply new highlights
+        if (data.highlights && data.highlights.length > 0) {
+            data.highlights.forEach(highlight => {
+                const verseElement = document.querySelector(
+                    `#${targetDivId} .verse[data-chapter="${highlight.chapter}"][data-verse-number="${highlight.verse_number}"]`
+                );
+                
+                if (verseElement) {
+                    const textNodes = getTextNodes(verseElement);
+                    let currentOffset = 0;
+                    let startNode, endNode;
+                    let startOffset, endOffset;
+
+                    for (const node of textNodes) {
+                        const nodeLength = node.textContent.length;
+                        
+                        if (!startNode && currentOffset + nodeLength > highlight.start_offset) {
+                            startNode = node;
+                            startOffset = highlight.start_offset - currentOffset;
+                        }
+                        
+                        if (!endNode && currentOffset + nodeLength >= highlight.end_offset) {
+                            endNode = node;
+                            endOffset = highlight.end_offset - currentOffset;
+                            break;
+                        }
+                        
+                        currentOffset += nodeLength;
+                    }
+
+                    if (startNode && endNode && startNode === endNode) {
+                        const range = document.createRange();
+                        range.setStart(startNode, startOffset);
+                        range.setEnd(endNode, endOffset);
+                        
+                        const span = document.createElement('span');
+                        span.className = `highlight ${highlight.color}`;
+                        range.surroundContents(span);
+                    }
+                }
+            });
+        }
+    })
+    .catch(error => console.error('Error fetching highlights:', error));
+}
+
+/**
+ * Saves a highlight to the server
+ * @param {object} highlightData 
+ * @returns {Promise}
+ */
+export function saveHighlight(highlightData) {
+    return fetch('/fetch/save_highlight/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify(highlightData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            console.error('Error saving highlight:', data.message);
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        throw error;
+    });
+}
+
+/**
+ * Removes a highlight from the server
+ * @param {object} highlightData 
+ * @returns {Promise}
+ */
+export function removeHighlight(highlightData) {
+    return fetch('/fetch/remove_highlight/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify(highlightData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status !== 'success') {
+            console.error('Error removing highlight:', data.message);
+        }
+        return data;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        throw error;
+    });
+}
+
 // ======================
 //  Comment Functions
 // ======================
@@ -160,17 +306,16 @@ export function fetchBookmarks(bookId, targetDivId) {
 // ======================
 
 /**
- * Refetches both comments and bookmarks for a verse
+ * Refetches all annotations for a verse
  * @param {string} bookId 
- * @param {string} chapter 
- * @param {string} verseNumber 
  * @param {string} targetDivId 
  * @returns {Promise}
  */
-export function refetchVerseAnnotations(bookId, chapter, verseNumber, targetDivId) {
+export function refetchAnnotations(bookId, targetDivId) {
     return Promise.all([
         fetchComments(bookId, targetDivId),
-        fetchBookmarks(bookId, targetDivId)
+        fetchBookmarks(bookId, targetDivId),
+        fetchHighlights(bookId, targetDivId)
     ]);
 }
 
@@ -223,11 +368,8 @@ export function fetchVerses(bookId, targetDivId) {
         
         document.getElementById(targetDivId).innerHTML = versesHtml;
         
-        // Fetch comments and bookmarks after verses are loaded
-        return Promise.all([
-            fetchComments(bookId, targetDivId),
-            fetchBookmarks(bookId, targetDivId)
-        ]);
+        // Fetch all annotations after verses are loaded
+        return refetchAnnotations(bookId, targetDivId);
     })
     .catch(error => {
         console.error('Error fetching verses:', error);

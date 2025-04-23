@@ -398,10 +398,68 @@ select:focus {
 
 /* Highlight Styles */
 .highlight {
-    background-color: #ffc107;
-    font-weight: bold;
-    padding: 2px 4px;
-    border-radius: 3px;
+    padding: 0.1em;
+    border-radius: 0.2em;
+    transition: background-color 0.2s;
+}
+
+.highlight.yellow {
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+.highlight.blue {
+    background-color: rgba(0, 0, 255, 0.3);
+}
+
+.highlight.green {
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+.highlight.pink {
+    background-color: rgba(255, 192, 203, 0.5);
+}
+
+.highlight-options {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.highlight-color {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.highlight-color.yellow {
+    background-color: #ffeb3b;
+}
+
+.highlight-color.blue {
+    background-color: #2196f3;
+}
+
+.highlight-color.green {
+    background-color: #4caf50;
+}
+
+.highlight-color.pink {
+    background-color: #e91e63;
+}
+
+.highlight-color:hover {
+    transform: scale(1.1);
+}
+
+.highlight-options-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0;
 }
 
 /*Comment Styles */

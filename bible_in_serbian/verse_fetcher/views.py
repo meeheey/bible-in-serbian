@@ -10,7 +10,7 @@ from random import choice
 import json
 
 from .models import Books, Verses
-from web_page.models import User, Comment, Bookmark, ReadBook
+from web_page.models import User, Comment, Bookmark, Highlight, ReadBook
 
 def fetch_book(request, book_id):
     book = Books.objects.get(id=book_id)
@@ -350,3 +350,104 @@ def toggle_read_status(request):
     
     except Books.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Book not found'}, status=404)
+    
+# In views.py
+@require_http_methods(["POST"])
+@csrf_exempt
+def save_highlight(request):
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        chapter = data.get('chapter')
+        verse_number = data.get('verse_number')
+        color = data.get('color')
+        text = data.get('text')
+        start_offset = data.get('start_offset')
+        end_offset = data.get('end_offset')
+
+        if not all([book_id, chapter, verse_number, color, text, start_offset, end_offset]):
+            return JsonResponse({'status': 'error', 'message': 'Missing required fields'}, status=400)
+
+        book = get_object_or_404(Books, id=book_id)
+        verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
+
+        highlight = Highlight.objects.create(
+            author=request.user,
+            book=book,
+            verse=verse,
+            color=color,
+            start_offset=start_offset,
+            end_offset=end_offset,
+            highlighted_text=text
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Highlight saved successfully',
+            'highlight_id': highlight.id
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def remove_highlight(request):
+    try:
+        data = json.loads(request.body)
+        book_id = data.get('book_id')
+        chapter = data.get('chapter')
+        verse_number = data.get('verse_number')
+        start_offset = data.get('start_offset')
+        end_offset = data.get('end_offset')
+
+        if not all([book_id, chapter, verse_number, start_offset, end_offset]):
+            return JsonResponse({'status': 'error', 'message': 'Missing required fields'}, status=400)
+
+        book = get_object_or_404(Books, id=book_id)
+        verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
+
+        Highlight.objects.filter(
+            author=request.user,
+            book=book,
+            verse=verse,
+            start_offset=start_offset,
+            end_offset=end_offset
+        ).delete()
+
+        return JsonResponse({'status': 'success', 'message': 'Highlight removed successfully'})
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error', 
+            'message': str(e)
+        }, status=500)
+
+@login_required
+def fetch_highlights(request, book_id):
+    try:
+        book = get_object_or_404(Books, id=book_id)
+        highlights = Highlight.objects.filter(author=request.user, book=book)
+        
+        highlights_data = []
+        for highlight in highlights:
+            highlights_data.append({
+                'chapter': highlight.verse.chapter,
+                'verse_number': highlight.verse.verse_number,
+                'color': highlight.color,
+                'start_offset': highlight.start_offset,
+                'end_offset': highlight.end_offset,
+                'text': highlight.highlighted_text,
+                'creation_date': highlight.creation_date.strftime("%Y-%m-%d %H:%M:%S")
+            })
+            
+        return JsonResponse({'highlights': highlights_data})
+    
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)

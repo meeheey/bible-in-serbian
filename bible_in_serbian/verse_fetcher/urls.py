@@ -14,4 +14,7 @@ urlpatterns = [
     path('<int:book_id>/bookmarks/', views.fetch_bookmarks, name='fetch_bookmarks'),
     path('toggle-read-status/', views.toggle_read_status, name='toggle_read_status'),
     path('random_verse/', views.fetch_random_verse, name='fetch_random_verse'),
+    path('<int:book_id>/highlights/', views.fetch_highlights, name='fetch_highlights'),
+    path('save_highlight/', views.save_highlight, name='save_highlight'),
+    path('remove_highlight/', views.remove_highlight, name='remove_highlight'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

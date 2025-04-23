@@ -48,6 +48,22 @@ class Bookmark(models.Model):
     def __str__(self):
         return f'Означено: ({self.book.acronym} {self.verse.chapter}:{self.verse.verse_number})'
     
+class Highlight(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='highlights')
+    book = models.ForeignKey('verse_fetcher.Books', on_delete=models.CASCADE)
+    verse = models.ForeignKey('verse_fetcher.Verses', on_delete=models.CASCADE)
+    color = models.CharField(max_length=20)  # 'yellow', 'blue', 'green', 'pink'
+    start_offset = models.PositiveIntegerField()
+    end_offset = models.PositiveIntegerField()
+    highlighted_text = models.TextField()
+    creation_date = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ('author', 'verse', 'start_offset', 'end_offset')
+        
+    def __str__(self):
+        return f"{self.book.acronym} {self.verse.chapter}:{self.verse.verse_number} ({self.color})"
+    
 class ReadBook(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='books_read')
     book = models.ForeignKey('verse_fetcher.Books', on_delete=models.CASCADE, related_name='book_read_by')

@@ -2,12 +2,16 @@ import {
     getCookie, 
     fetchComments, 
     fetchBookmarks, 
+    fetchHighlights,
+    saveHighlight,
+    removeHighlight,
     getSelectedVerse, 
     getTargetDivIdForVerse
 } from './utils.js';
 
 const box = document.getElementById('floating-box');
 
+// Initialize toolbox position
 function positionToolbox() {
     box.style.position = 'fixed';
     
@@ -27,7 +31,7 @@ function positionToolbox() {
 // Set initial position
 positionToolbox();
 
-// Debounce the resize event to improve performance
+// Debounce the resize event
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
@@ -64,40 +68,191 @@ document.addEventListener('mouseup', () => {
     box.style.cursor = 'move';
 });
 
-// Function to highlight the selected text
-function highlightSelectedText() {
-    if (!isHighlightActive) return;
+// ======================
+//  Highlight Functions
+// ======================
 
+/**
+ * Highlights selected text with the specified color
+ * @param {string} color 
+ */
+function highlightSelectedText(color) {
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && !selection.isCollapsed) {
         const range = selection.getRangeAt(0);
-        const containsHighlight = Array.from(range.cloneContents().querySelectorAll('.highlight')).length > 0;
-
-        if (containsHighlight) {
-            const span = document.createElement('span');
-            span.appendChild(range.extractContents());
-            range.insertNode(span);
-
-            span.querySelectorAll('.highlight').forEach(highlightedElement => {
-                const textNode = document.createTextNode(highlightedElement.textContent);
-                highlightedElement.parentNode.replaceChild(textNode, highlightedElement);
-            });
-
-            span.parentNode.normalize();
-        } else {
-            const span = document.createElement('span');
-            span.className = 'highlight';
-            range.surroundContents(span);
+        const selectedVerse = getSelectedVerse();
+        
+        if (!selectedVerse) {
+            alert('Молимо изаберите стих пре него што подвучете текст.');
+            return;
         }
+
+        // Check if selection is within a verse
+        const verseElement = range.startContainer.parentElement.closest('.verse');
+        if (!verseElement) {
+            alert('Подвлачење је могуће само унутар стихова.');
+            return;
+        }
+
+        // Save the original text and offsets
+        const selectedText = range.toString();
+        const startOffset = getTextOffset(verseElement, range.startContainer, range.startOffset);
+        const endOffset = startOffset + selectedText.length;
+
+        // Create highlight span
+        const span = document.createElement('span');
+        span.className = `highlight ${color}`;
+        range.surroundContents(span);
+
+        // Save to server
+        saveHighlight({
+            book_id: selectedVerse.bookId,
+            chapter: selectedVerse.chapter,
+            verse_number: selectedVerse.verseNumber,
+            color: color,
+            text: selectedText,
+            start_offset: startOffset,
+            end_offset: endOffset
+        }).catch(error => {
+            // If save fails, remove the highlight
+            span.replaceWith(span.childNodes[0]);
+            console.error('Failed to save highlight:', error);
+        });
 
         selection.removeAllRanges();
     }
 }
 
-// Add event listener for text selection
-document.addEventListener('mouseup', highlightSelectedText);
+/**
+ * Removes highlight from selected text
+ */
+function removeHighlightFromSelection() {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0 || selection.isCollapsed) {
+        alert('Молимо означите подвучени текст који желите да уклоните.');
+        return;
+    }
 
-// Function to transform the floating box into a comment form
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        alert('Молимо изаберите стих пре него што уклоните подвлачење.');
+        return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+    const verseElement = container.nodeType === Node.ELEMENT_NODE
+        ? container.closest('.verse')
+        : container.parentElement.closest('.verse');
+
+    if (!verseElement) {
+        alert('Подвлачење се може уклонити само унутар стихова.');
+        return;
+    }
+
+    // Find all highlights within the selection
+    const highlightsToRemove = [];
+    const walker = document.createTreeWalker(
+        verseElement,
+        NodeFilter.SHOW_ELEMENT,
+        {
+            acceptNode: node => {
+                if (
+                    node.classList &&
+                    node.classList.contains('highlight') &&
+                    range.intersectsNode(node)
+                ) {
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+                return NodeFilter.FILTER_SKIP;
+            }
+        },
+        false
+    );
+
+    let node;
+    while ((node = walker.nextNode())) {
+        highlightsToRemove.push(node);
+    }
+
+    if (highlightsToRemove.length === 0) {
+        alert('Није пронађено подвучено у изабраном делу.');
+        return;
+    }
+
+    highlightsToRemove.forEach(highlight => {
+        const highlightText = highlight.textContent;
+
+        const startOffset = getTextOffset(verseElement, highlight.firstChild, 0);
+        const endOffset = startOffset + highlightText.length;
+
+        // Unwrap the highlight span
+        highlight.replaceWith(...highlight.childNodes);
+
+        // Notify server to remove it
+        removeHighlight({
+            book_id: selectedVerse.bookId,
+            chapter: selectedVerse.chapter,
+            verse_number: selectedVerse.verseNumber,
+            start_offset: startOffset,
+            end_offset: endOffset
+        }).catch(error => {
+            console.error('Failed to remove highlight:', error);
+        });
+    });
+
+    selection.removeAllRanges();
+}
+
+
+/**
+ * Calculates text offset within a verse element
+ * @param {HTMLElement} verseElement 
+ * @param {Node} node 
+ * @param {number} nodeOffset 
+ * @returns {number}
+ */
+function getTextOffset(verseElement, node, nodeOffset) {
+    const walker = document.createTreeWalker(
+        verseElement,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    let offset = 0;
+    let currentNode;
+    
+    while (currentNode = walker.nextNode()) {
+        if (currentNode === node) {
+            return offset + nodeOffset;
+        }
+        offset += currentNode.textContent.length;
+    }
+    
+    return offset;
+}
+
+/**
+ * Toggles highlight mode
+ */
+function toggleHighlightMode() {
+    isHighlightActive = !isHighlightActive;
+    if (isHighlightActive) {
+        transformBoxIntoHighlightForm();
+    } else {
+        transformBoxIntoToolbox();
+    }
+}
+
+
+// ======================
+//  Comment Functions
+// ======================
+
+/**
+ * Transforms the toolbox into a comment form
+ */
 function transformBoxIntoCommentForm() {
     const selectedVerse = getSelectedVerse();
     if (!selectedVerse) return;
@@ -127,94 +282,36 @@ function transformBoxIntoCommentForm() {
     }
 }
 
-// Function to transform the floating box back into the toolbox
-function transformBoxIntoToolbox() {
+function transformBoxIntoHighlightForm() {
+
     box.innerHTML = `
-        <div id="header">Алати</div>
-        <button id="highlight">Подвуци</button>
-        <button id="comment">Коментариши</button>
-        <button id="quote">Цитирај</button>
-        <button id="bookmark">Обележи</button>
+        <div id="header">Одаберите боју</div>
+        <div class="highlight-options-form">
+            <button class="highlight-color yellow" data-color="yellow" title="Жута" style="background-color: yellow;"></button>
+            <button class="highlight-color blue" data-color="blue" title="Плава" style="background-color: #add8e6;"></button>
+            <button class="highlight-color green" data-color="green" title="Зелена" style="background-color: #90ee90;"></button>
+            <button class="highlight-color pink" data-color="pink" title="Розе" style="background-color: #ffc0cb;"></button>
+        </div>
+        <button id="remove-highlight">Уклони подвлачење</button>
+        <button id="exit-highlight">Изађи</button>
     `;
 
-    updateBookmarkButton();
-    updateCommentButton();
-
-    document.getElementById('highlight').addEventListener('click', () => {
-        isHighlightActive = !isHighlightActive;
-        alert(`Функција подвлачења је ${isHighlightActive ? 'активна' : 'неактивна'}.`);
+    document.querySelectorAll('.highlight-color').forEach(btn => {
+        btn.addEventListener('click', function() {
+            highlightSelectedText(this.dataset.color);
+        });
     });
-    
-    document.getElementById('comment').addEventListener('click', () => {
-        isCommentActive = !isCommentActive;
-        if (isCommentActive) {
-            transformBoxIntoCommentForm();
-        } else {
-            transformBoxIntoToolbox();
-        }
+
+    document.getElementById('remove-highlight').addEventListener('click', removeHighlightFromSelection);
+    document.getElementById('exit-highlight').addEventListener('click', () => {
+        isHighlightActive = false;
+        transformBoxIntoToolbox();
     });
-    
-    document.getElementById('quote').addEventListener('click', copyVerseToClipboard);
-    
-    document.getElementById('bookmark').addEventListener('click', toggleBookmark);
 }
 
-// Function to update comment button text
-function updateCommentButton() {
-    const commentBtn = document.getElementById('comment');
-    if (!commentBtn) return;
-
-    const selectedVerse = getSelectedVerse();
-    if (!selectedVerse) {
-        commentBtn.textContent = 'Коментариши';
-        return;
-    }
-
-    const verseElement = document.querySelector(
-        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-comment`
-    );
-
-    commentBtn.textContent = verseElement ? 'Измени коментар' : 'Коментариши';
-}
-
-// Function to update bookmark button text
-function updateBookmarkButton() {
-    const bookmarkBtn = document.getElementById('bookmark');
-    if (!bookmarkBtn) return;
-
-    const selectedVerse = getSelectedVerse();
-    if (!selectedVerse) {
-        bookmarkBtn.textContent = 'Обележи';
-        return;
-    }
-
-    const verseElement = document.querySelector(
-        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
-    );
-
-    bookmarkBtn.textContent = verseElement ? 'Уклони обележивач' : 'Обележи';
-}
-
-// Function to toggle bookmark
-function toggleBookmark() {
-    const selectedVerse = getSelectedVerse();
-    if (!selectedVerse) {
-        alert('Молимо изаберите стих пре него што сачувате обележивач.');
-        return;
-    }
-
-    const verseElement = document.querySelector(
-        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
-    );
-
-    if (verseElement) {
-        removeBookmark(selectedVerse);
-    } else {
-        saveBookmark(selectedVerse);
-    }
-}
-
-// Updated saveComment function with better error handling
+/**
+ * Saves a comment
+ */
 function saveComment() {
     const commentText = document.getElementById('comment-text').value.trim();
     if (!commentText) {
@@ -235,8 +332,6 @@ function saveComment() {
         comment: commentText,
     };
 
-    console.log('Saving comment with data:', data); // Debug log
-
     fetch('/fetch/save_comment/', {
         method: 'POST',
         headers: {
@@ -246,23 +341,18 @@ function saveComment() {
         body: JSON.stringify(data),
     })
     .then(response => {
-        console.log('Save comment response:', response); // Debug log
         if (!response.ok) {
-            // Try to parse error response as JSON, fallback to text if fails
-            return response.json().catch(() => {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }).then(errData => {
+            return response.json().then(errData => {
                 throw new Error(errData.message || `HTTP error! Status: ${response.status}`);
             });
         }
         return response.json();
     })
     .then(data => {
-        console.log('Save comment success:', data); // Debug log
         if (data.status === 'success') {
             alert('Коментар је успешно сачуван.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            return fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+            return fetchComments(selectedVerse.bookId, targetDivId)
                 .then(() => {
                     isCommentActive = false;
                     transformBoxIntoToolbox();
@@ -277,7 +367,9 @@ function saveComment() {
     });
 }
 
-// Function to delete a comment
+/**
+ * Deletes a comment
+ */
 function deleteComment() {
     const selectedVerse = getSelectedVerse();
     if (!selectedVerse) {
@@ -313,7 +405,7 @@ function deleteComment() {
         if (data.status === 'success') {
             alert('Коментар је успешно обрисан.');
             const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
+            fetchComments(selectedVerse.bookId, targetDivId)
                 .then(() => {
                     isCommentActive = false;
                     transformBoxIntoToolbox();
@@ -328,6 +420,120 @@ function deleteComment() {
     });
 }
 
+// ======================
+//  Bookmark Functions
+// ======================
+
+/**
+ * Toggles a bookmark
+ */
+function toggleBookmark() {
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        alert('Молимо изаберите стих пре него што сачувате обележивач.');
+        return;
+    }
+
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
+    );
+
+    if (verseElement) {
+        removeBookmark(selectedVerse);
+    } else {
+        saveBookmark(selectedVerse);
+    }
+}
+
+/**
+ * Saves a bookmark
+ * @param {object} selectedVerse 
+ */
+function saveBookmark(selectedVerse) {
+    const data = {
+        book_id: selectedVerse.bookId,
+        chapter: selectedVerse.chapter,
+        verse_number: selectedVerse.verseNumber,
+    };
+
+    fetch('/fetch/save_bookmark/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then((data) => {
+        if (data.status === 'success') {
+            alert('Обележивач је успешно сачуван.');
+            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
+            fetchBookmarks(selectedVerse.bookId, targetDivId)
+                .then(() => updateBookmarkButton());
+        } else {
+            alert(`Грешка: ${data.message}`);
+        }
+    })
+    .catch((error) => {
+        console.error('Грешка:', error);
+        alert('Дошло је до грешке приликом чувања обележивача.');
+    });
+}
+
+/**
+ * Removes a bookmark
+ * @param {object} selectedVerse 
+ */
+function removeBookmark(selectedVerse) {
+    const data = {
+        book_id: selectedVerse.bookId,
+        chapter: selectedVerse.chapter,
+        verse_number: selectedVerse.verseNumber,
+    };
+
+    fetch('/fetch/delete_bookmark/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify(data),
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then((data) => {
+        if (data.status === 'success') {
+            alert('Обележивач је успешно уклоњен.');
+            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
+            fetchBookmarks(selectedVerse.bookId, targetDivId)
+                .then(() => updateBookmarkButton());
+        } else {
+            alert(`Грешка: ${data.message}`);
+        }
+    })
+    .catch((error) => {
+        console.error('Грешка:', error);
+        alert('Дошло је до грешке приликом уклањања обележивача.');
+    });
+}
+
+// ======================
+//  Quote Function
+// ======================
+
+/**
+ * Copies verse to clipboard
+ */
 function copyVerseToClipboard() {
     const selectedVerses = document.querySelectorAll('.verse.selected');
     
@@ -372,7 +578,6 @@ function copyVerseToClipboard() {
     // Copy to clipboard
     navigator.clipboard.writeText(formattedText)
         .then(() => {
-            // Optional: You can remove this alert if you prefer silent copying
             alert('Стих је копиран у клипборд!');
         })
         .catch(err => {
@@ -392,83 +597,102 @@ function copyVerseToClipboard() {
         });
 }
 
-// Function to save a bookmark
-function saveBookmark(selectedVerse) {
-    const data = {
-        book_id: selectedVerse.bookId,
-        chapter: selectedVerse.chapter,
-        verse_number: selectedVerse.verseNumber,
-    };
+// ======================
+//  Toolbox UI Functions
+// ======================
 
-    fetch('/fetch/save_bookmark/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify(data),
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then((data) => {
-        if (data.status === 'success') {
-            alert('Обележивач је успешно сачуван.');
-            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
-                .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
-                .then(() => updateBookmarkButton());
+/**
+ * Transforms the toolbox into the main tools view
+ */
+function transformBoxIntoToolbox() {
+    box.innerHTML = `
+        <div id="header">Алати</div>
+        <div class="highlight-options" style="display: ${isHighlightActive ? 'flex' : 'none'}">
+            <button class="highlight-color yellow" data-color="yellow" title="Жута"></button>
+            <button class="highlight-color blue" data-color="blue" title="Плава"></button>
+            <button class="highlight-color green" data-color="green" title="Зелена"></button>
+            <button class="highlight-color pink" data-color="pink" title="Розе"></button>
+        </div>
+        <button id="highlight">${isHighlightActive ? 'Искључи подвлачење' : 'Подвуци'}</button>
+        <button id="remove-highlight" style="display: ${isHighlightActive ? 'block' : 'none'}">Уклони подвлачење</button>
+        <button id="comment">Коментариши</button>
+        <button id="quote">Цитирај</button>
+        <button id="bookmark">Обележи</button>
+    `;
+
+    // Update button states
+    updateBookmarkButton();
+    updateCommentButton();
+
+    // Add event listeners
+    document.getElementById('highlight').addEventListener('click', toggleHighlightMode);
+    
+    if (isHighlightActive) {
+        document.querySelectorAll('.highlight-color').forEach(btn => {
+            btn.addEventListener('click', function() {
+                highlightSelectedText(this.dataset.color);
+            });
+        });
+        
+        document.getElementById('remove-highlight').addEventListener('click', removeHighlightFromSelection);
+    }
+    
+    document.getElementById('comment').addEventListener('click', () => {
+        isCommentActive = !isCommentActive;
+        if (isCommentActive) {
+            transformBoxIntoCommentForm();
         } else {
-            alert(`Грешка: ${data.message}`);
+            transformBoxIntoToolbox();
         }
-    })
-    .catch((error) => {
-        console.error('Грешка:', error);
-        alert('Дошло је до грешке приликом чувања обележивача.');
     });
+    
+    document.getElementById('quote').addEventListener('click', copyVerseToClipboard);
+    document.getElementById('bookmark').addEventListener('click', toggleBookmark);
 }
 
-// Function to remove a bookmark
-function removeBookmark(selectedVerse) {
-    const data = {
-        book_id: selectedVerse.bookId,
-        chapter: selectedVerse.chapter,
-        verse_number: selectedVerse.verseNumber,
-    };
+/**
+ * Updates the comment button text based on existing comments
+ */
+function updateCommentButton() {
+    const commentBtn = document.getElementById('comment');
+    if (!commentBtn) return;
 
-    fetch('/fetch/delete_bookmark/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: JSON.stringify(data),
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then((data) => {
-        if (data.status === 'success') {
-            alert('Обележивач је успешно уклоњен.');
-            const targetDivId = getTargetDivIdForVerse(selectedVerse.bookId);
-            fetchComments(selectedVerse.bookId, targetDivId, getCookie('csrftoken'))
-                .then(() => fetchBookmarks(selectedVerse.bookId, targetDivId, getCookie('csrftoken')))
-                .then(() => updateBookmarkButton());
-        } else {
-            alert(`Грешка: ${data.message}`);
-        }
-    })
-    .catch((error) => {
-        console.error('Грешка:', error);
-        alert('Дошло је до грешке приликом уклањања обележивача.');
-    });
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        commentBtn.textContent = 'Коментариши';
+        return;
+    }
+
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-comment`
+    );
+
+    commentBtn.textContent = verseElement ? 'Измени коментар' : 'Коментариши';
 }
+
+/**
+ * Updates the bookmark button text based on existing bookmarks
+ */
+function updateBookmarkButton() {
+    const bookmarkBtn = document.getElementById('bookmark');
+    if (!bookmarkBtn) return;
+
+    const selectedVerse = getSelectedVerse();
+    if (!selectedVerse) {
+        bookmarkBtn.textContent = 'Обележи';
+        return;
+    }
+
+    const verseElement = document.querySelector(
+        `.verse[data-book-id="${selectedVerse.bookId}"][data-chapter="${selectedVerse.chapter}"][data-verse-number="${selectedVerse.verseNumber}"] .fa-bookmark`
+    );
+
+    bookmarkBtn.textContent = verseElement ? 'Уклони обележивач' : 'Обележи';
+}
+
+// ======================
+//  Verse Selection Handling
+// ======================
 
 document.addEventListener('click', function(event) {
     const clickedElement = event.target;
@@ -483,7 +707,7 @@ document.addEventListener('click', function(event) {
         // If quote mode is active, copy the verse immediately
         if (isQuoteActive) {
             copyVerseToClipboard();
-            isQuoteActive = false; // Deactivate after copying
+            isQuoteActive = false;
         }
     }
 });

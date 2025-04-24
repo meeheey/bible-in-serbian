@@ -84,8 +84,7 @@ def quick_search(request):
             "show_controls": True
         })
     
-    # More efficient search using filter
-    verses = Verses.objects.filter(verse__icontains=query).select_related('book')[:100]
+    verses = Verses.objects.filter(verse__icontains=query).select_related('book')
     
     return render(request, "web_page/quick_search_results.html", {
         "verses": verses,

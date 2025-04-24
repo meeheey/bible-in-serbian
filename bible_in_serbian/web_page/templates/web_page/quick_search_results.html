@@ -1,28 +1,11 @@
 {% extends "web_page/layout.html" %}
 {% load static %}
 
-{% block title %}Резултати претраге за "{{ query }}"{% endblock %}
+{% block title %}Резултати брзе претраге за "{{ query }}"{% endblock %}
 
 {% block body %}
-<h2 class="my-4 unselectable">Резултати претраге за „{{ query }}”</h2>
+<h2 class="my-4 unselectable">Резултати брзе претраге за „{{ query }}”</h2>
 
-<!-- Same controls as your original page -->
-{% if verses %}
-<div class="controls">
-    <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Претрага стихова">
-        <button id="searchInfo" class="info-button" aria-label="Search Help">i</button>
-        <div id="searchTooltip" class="tooltip">
-            <strong>Оператори претраге:</strong><br>
-            - Користи <code>&</code> за И (нпр., <code>фарисеј&садукеј</code>).<br>
-            - Користи <code>|</code> за ИЛИ (нпр., <code>фарисеј|садукеј</code>).<br>
-            - Користи <code>!</code> за НЕ (нпр., <code>!фарисеј</code>).<br>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<!-- Verses container with same styling -->
 <div class="verses-container">
     {% if verses %}
         <div id="verses">
@@ -61,21 +44,5 @@
         <p>Нема резултата за приказ за „{{ query }}”.</p>
     {% endif %}
 </div>
-
-{% if user.is_authenticated %}
-<div id="floating-box">
-    <div id="header" class="unselectable">Алати</div>
-    <button id="highlight">Подвуци</button>
-    <button id="comment">Коментариши</button>
-    <button id="quote">Цитирај</button>
-    <button id="bookmark">Означи</button>
-</div>
-{% endif %}
-
-<!-- Include the same JS files as your original page -->
-<script src="{% static 'web_page/search.js' %}"></script>
-{% if user.is_authenticated %}
-<script type="module" src="{% static 'web_page/toolbox.js' %}"></script>
-{% endif %}
 
 {% endblock %}

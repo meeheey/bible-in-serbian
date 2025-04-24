@@ -3,7 +3,7 @@
 
 {% block body %}
 
-<h2 id="verse-reference">{{ verse.book.acronym }} {{ verse.chapter_mask }}{% if verse.verse_number != 0 %}{% if verse.verse_number_mask %}:{% endif %}{{ verse.verse_number_mask }}{% endif %}</h2>
+<h2 id="verse-reference"><a href="{% url 'show_book' book_id=verse.book.id %}" class="book-link">{{ verse.book.acronym }}</a> {{ verse.chapter_mask }}{% if verse.verse_number != 0 %}{% if verse.verse_number_mask %}:{% endif %}{{ verse.verse_number_mask }}{% endif %}</h2>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -11,18 +11,18 @@
             <div class="card shadow">
                 <div class="card-body text-center">
                     <div id="verse-container">
-                        <p class="lead" id="verse-text">{{ verse.verse }}</p>
+                        <p class="lead" id="verse-text">{% if verse.verse_number == 0 %}<em>{% endif %}{{ verse.verse }}{% if verse.verse_number == 0 %}</em>{% endif %}</p>
                     </div>
+                    {% if user.is_authenticated %}
                     <button id="comment-btn" class="btn btn-primary">
                         <i class='fas fa-comment'></i>
                     </button>
-                    {% if user.is_authenticated %}
                     <button id="save-or-remove-bookmark-btn" class="btn btn-primary">
                     </button>
+                    {% endif %}
                     <button id="quote-btn" class="btn btn-primary">
                         <i class='fas fa-quote-right'></i>
                     </button>
-                    {% endif %}
                 </div>
             </div>
         </div>

@@ -49,7 +49,7 @@ def save_comment(request):
         verse_number = data.get('verse_number')
         comment_text = data.get('comment')
 
-        if not all([book_id, chapter, verse_number, comment_text]):
+        if book_id is None or chapter is None or verse_number is None or not comment_text:
             return JsonResponse({
                 'status': 'error',
                 'message': 'Missing required fields.'
@@ -122,7 +122,6 @@ def fetch_comments(request, book_id):
         # Handle unexpected errorssave
         return JsonResponse({"error": str(e)}, status=500)@require_http_methods(["POST"])  # Restrict this view to POST requests only
     
-# views.py
 @require_http_methods(["POST"])
 @csrf_exempt
 def save_comment(request):
@@ -135,7 +134,7 @@ def save_comment(request):
         comment_text = data.get('comment')
 
         # Validate required fields
-        if not all([book_id, chapter, verse_number, comment_text]):
+        if book_id is None or chapter is None or verse_number is None or not comment_text:
             return JsonResponse({
                 'status': 'error',
                 'message': 'All fields are required: book_id, chapter, verse_number, comment'
@@ -184,7 +183,7 @@ def save_bookmark(request):
         verse_number = data.get('verse_number')
 
         # Validate required fields
-        if not all([book_id, chapter, verse_number]):
+        if book_id is None or chapter is None or verse_number is None:
             return HttpResponseBadRequest("Missing required fields.")
 
         # Convert book_id, chapter, and verse_number to integers
@@ -237,7 +236,7 @@ def delete_bookmark(request):
         chapter = data.get('chapter')
         verse_number = data.get('verse_number')
 
-        if not all([book_id, chapter, verse_number]):
+        if book_id is None or chapter is None or verse_number is None:
             return HttpResponseBadRequest("Missing required fields.")
 
         book = get_object_or_404(Books, id=book_id)
@@ -307,7 +306,7 @@ def delete_comment(request):
         chapter = data.get('chapter')
         verse_number = data.get('verse_number')
 
-        if not all([book_id, chapter, verse_number]):
+        if book_id is None or chapter is None or verse_number is None:
             return HttpResponseBadRequest("Missing required fields.")
 
         book = get_object_or_404(Books, id=book_id)
@@ -365,8 +364,17 @@ def save_highlight(request):
         start_offset = data.get('start_offset')
         end_offset = data.get('end_offset')
 
-        if not all([book_id, chapter, verse_number, color, text, start_offset, end_offset]):
+        if (
+            book_id is None or
+            chapter is None or
+            verse_number is None or
+            color is None or
+            text is None or
+            start_offset is None or
+            end_offset is None
+        ):
             return JsonResponse({'status': 'error', 'message': 'Missing required fields'}, status=400)
+
 
         book = get_object_or_404(Books, id=book_id)
         verse = get_object_or_404(Verses, book=book, chapter=chapter, verse_number=verse_number)
@@ -403,8 +411,14 @@ def remove_highlight(request):
         verse_number = data.get('verse_number')
         start_offset = data.get('start_offset')
         end_offset = data.get('end_offset')
-
-        if not all([book_id, chapter, verse_number, start_offset, end_offset]):
+        
+        if (
+            book_id is None or
+            chapter is None or
+            verse_number is None or
+            start_offset is None or
+            end_offset is None
+        ):
             return JsonResponse({'status': 'error', 'message': 'Missing required fields'}, status=400)
 
         book = get_object_or_404(Books, id=book_id)

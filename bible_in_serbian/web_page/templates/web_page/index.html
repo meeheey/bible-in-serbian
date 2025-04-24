@@ -5,6 +5,11 @@
 <div class="container">
     <h2 class="my-4 unselectable">Садржај</h2>
     
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <input type="text" id="bookSearch" class="form-control" placeholder="Претражите садржај...">
+    </div>
+    
     <div class="bible-table-container">
         <!-- Old Testament -->
         <h3 class="mt-5 mb-3 unselectable">Књиге Старога завјета</h3>
@@ -284,4 +289,107 @@
     </div>
 </div>
 
-{% endblock %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('bookSearch');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        let previousSection = null;
+        let previousSubsection = null;
+        let hasVisibleContentInSection = false;
+        let hasVisibleContentInSubsection = false;
+        
+        // Show everything if search is empty
+        if (!searchTerm) {
+            document.querySelectorAll('.bible-table-container .table-responsive, .bible-table-container h3, .bible-table-container h4').forEach(el => {
+                el.style.display = '';
+            });
+            document.querySelectorAll('.bible-table-container table thead, .bible-table-container table tbody tr').forEach(el => {
+                el.style.display = '';
+            });
+            return;
+        }
+        
+        // Process all tables
+        document.querySelectorAll('.bible-table-container .table-responsive').forEach(tableContainer => {
+            const table = tableContainer.querySelector('table');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            const rows = tbody.querySelectorAll('tr');
+            let hasVisibleRows = false;
+            
+            // Filter rows
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Toggle table header and container
+            thead.style.display = hasVisibleRows ? '' : 'none';
+            tableContainer.style.display = hasVisibleRows ? '' : 'none';
+            
+            // Track subsection visibility
+            const currentSubsection = tableContainer.previousElementSibling;
+            if (currentSubsection && currentSubsection.tagName === 'H4') {
+                if (hasVisibleRows) {
+                    currentSubsection.style.display = '';
+                    hasVisibleContentInSubsection = true;
+                } else if (currentSubsection !== previousSubsection) {
+                    currentSubsection.style.display = 'none';
+                }
+                previousSubsection = currentSubsection;
+            }
+            
+            // Track section visibility
+            const currentSection = currentSubsection ? 
+                currentSubsection.previousElementSibling : 
+                tableContainer.previousElementSibling;
+                
+            if (currentSection && currentSection.tagName === 'H3') {
+                if (currentSection !== previousSection) {
+                    if (previousSection && !hasVisibleContentInSection) {
+                        previousSection.style.display = 'none';
+                    }
+                    previousSection = currentSection;
+                    hasVisibleContentInSection = false;
+                }
+                if (hasVisibleRows) {
+                    hasVisibleContentInSection = true;
+                }
+            }
+        });
+        
+        // Hide last section if empty
+        if (previousSection && !hasVisibleContentInSection) {
+            previousSection.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<style>
+    /* Smooth transitions for better UX */
+    .table-responsive, h3, h4 {
+        transition: all 0.3s ease;
+    }
+    
+    /* Make search bar more prominent */
+    #bookSearch {
+        padding: 12px;
+        font-size: 1.1rem;
+    }
+    
+    /* Adjust spacing when filtered */
+    .bible-table-container > h3:first-child {
+        margin-top: 1rem !important;
+    }
+</style>
+
+    
+    {% endblock %}

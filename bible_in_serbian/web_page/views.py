@@ -154,7 +154,7 @@ def view_verse(request, book_id, chapter, verse_number):
     comment_text = None
 
     if request.user.is_authenticated:
-        is_bookmarked = Bookmark.objects.filter(verse=verse, user=request.user).exists()
+        is_bookmarked = Bookmark.objects.filter(verse=verse, author=request.user).exists()
         try:
             comment = Comment.objects.get(verse=verse, author=request.user)
             comment_text = comment.comment

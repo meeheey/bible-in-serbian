@@ -1,6 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 from . import views
 
@@ -17,4 +18,9 @@ urlpatterns = [
     path('read/', views.show_read_books, name='show_read_books'),
     path('bookmarks/', views.show_bookmarks, name='show_bookmarks'),
     path('random_verse_generator', views.random_verse_generator, name='random_verse_generator'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    path('password-reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -149,16 +149,22 @@ def view_comment(request, comment_id):
 def view_verse(request, book_id, chapter, verse_number):
     book = Books.objects.get(id=book_id)
     verse = Verses.objects.get(book=book, chapter=chapter, verse_number=verse_number)
-    exists = Bookmark.objects.filter(verse=verse).exists()
-    try:
-        comment = Comment.objects.get(verse=verse, author=request.user)
-        comment_text = comment.comment
-    except Comment.DoesNotExist:
-        comment_text = None
-    return render(request, "web_page/verse.html",{
+    
+    is_bookmarked = False
+    comment_text = None
+
+    if request.user.is_authenticated:
+        is_bookmarked = Bookmark.objects.filter(verse=verse, user=request.user).exists()
+        try:
+            comment = Comment.objects.get(verse=verse, author=request.user)
+            comment_text = comment.comment
+        except Comment.DoesNotExist:
+            comment_text = None
+
+    return render(request, "web_page/verse.html", {
         "verse": verse,
         "comment_text": comment_text,
-        "is_bookmarked": exists
+        "is_bookmarked": is_bookmarked
     })
 
 def show_read_books(request):

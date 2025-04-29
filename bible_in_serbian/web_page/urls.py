@@ -18,6 +18,7 @@ urlpatterns = [
     path('read/', views.show_read_books, name='show_read_books'),
     path('bookmarks/', views.show_bookmarks, name='show_bookmarks'),
     path('comments/', views.show_comments, name='show_comments'),
+    path('my_profile/', views.user_profile, name='user_profile'),
     path('random_verse_generator', views.random_verse_generator, name='random_verse_generator'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path(

@@ -26,9 +26,10 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% if user.is_authenticated %}
+                                <a class="dropdown-item" href="{% url 'user_profile' %}"><i class="fas fa-user"></i> Мој профил</a>
+                                <a class="dropdown-item" href="{% url 'show_read_books' %}"><i class="fas fa-mountain"></i> Прати прогрес</a>
                                 <a class="dropdown-item" href="{% url 'show_comments' %}"><i class="fas fa-comment"></i> Преглед коментара</a>
                                 <a class="dropdown-item" href="{% url 'show_bookmarks' %}"><i class="fas fa-bookmark"></i> Преглед обележивача</a>
-                                <a class="dropdown-item" href="{% url 'show_read_books' %}"><i class="fas fa-mountain"></i> Прати прогрес</a>
                                 <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-user-slash"></i> Одјава</a>
                             {% else %}
                                 <a class="dropdown-item" href="{% url 'login' %}"><i class="fas fa-user-alt"></i> Пријава</a>

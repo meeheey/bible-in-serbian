@@ -11,7 +11,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import get_user_model
 
 from .utils import account_activation_token
-from .models import User, Comment, Bookmark, ReadBook
+from .models import User, Comment, Bookmark, ReadBook, Highlight
 from verse_fetcher.models import Books, Verses
 
 
@@ -193,3 +193,15 @@ def show_comments(request):
 
 def random_verse_generator(request):
         return render(request, "web_page/random_verse_generator.html")
+
+def user_profile(request):
+    read_books = ReadBook.objects.filter(author=request.user).count()
+    comments = Comment.objects.filter(author=request.user).count()
+    bookmarks = Bookmark.objects.filter(author=request.user).count()
+    highlights = Highlight.objects.filter(author=request.user).count()
+    return render(request, "web_page/user_profile.html", {
+        "read_books": read_books,
+        "comments": comments,
+        "bookmarks": bookmarks,
+        "highlights": highlights
+    })

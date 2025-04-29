@@ -1,0 +1,49 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+    <h2 class="my-4 unselectable">Мој профил</h2>
+
+    <h3 class="my-4 unselectable">Статистика</h2>    
+    
+    <div class="books-grid">
+        <div class="book-card">
+            <div class="book-card-inner">
+                <button class="book-btn bookmark">
+                    <i class="fas fa-book-medical"></i>
+                </button>
+                
+                    <h4>{{ read_books }}</h4>
+            </div>
+        </div>
+        <div class="book-card">
+            <div class="book-card-inner">
+                <button class="book-btn bookmark">
+                    <i class="fas fa-comment"></i>
+                </button>
+                
+                    <h4>{{ comments }}</h4>
+            </div>
+        </div>
+        <div class="book-card">
+            <div class="book-card-inner">
+                <button class="book-btn bookmark">
+                    <i class="fas fa-bookmark"></i>
+                </button>
+                
+                    <h4>{{ bookmarks }}</h4>
+            </div>
+        </div>
+        <div class="book-card">
+            <div class="book-card-inner">
+                <button class="book-btn bookmark">
+                    <i class="fas fa-highlighter"></i>
+                </button>
+                
+                    <h4>{{ highlights }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -184,5 +184,12 @@ def show_bookmarks(request):
         "bookmarks": bookmarks
     })
 
+def show_comments(request):
+    comments = Comment.objects.filter(author=request.user).order_by('creation_date')
+    return render(request, "web_page/comments.html", {
+        "comments": comments
+    })
+
+
 def random_verse_generator(request):
         return render(request, "web_page/random_verse_generator.html")

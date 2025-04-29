@@ -1,0 +1,56 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="container">
+<h2 class="my-4 unselectable">Коментари</h2>
+<div class="books-grid">
+{% for comment in comments %}
+<div class="book-card" data-book-id="{{ book_data.book.id }}">
+<div class="book-card-inner">
+<button class="book-btn comment">
+<i class="fas fa-comment"></i>
+</button>
+<a href="{% url 'view_verse' book_id=comment.verse.book.id chapter=comment.verse.chapter verse_number=comment.verse.verse_number %}" class="book-link">
+<div class="book-acronym unselectable">
+{{ comment.verse.book.acronym }} {{ comment.verse.chapter_mask }}{% if comment.verse.verse_number != 0 %}{% if comment.verse.verse_number_mask %}:{% endif %} {{ comment.verse.verse_number_mask }}{% endif %}
+</div>
+</a>
+<!-- Display the preview of the verse -->
+<div class="verse-preview">
+<p>{% if comment.verse.verse_number == 0 %}<em>{% endif %}{{ comment.verse.verse|truncatewords:5 }}{% if comment.verse.verse_number == 0 %}</em>{% endif %}</p>
+</div>
+<!-- Full verse text, initially hidden -->
+<div class="verse-text" style="display: none;">
+<p>{{ comment.comment }}</p>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+
+<script>
+document.querySelectorAll('.book-card').forEach(card => {
+card.addEventListener('click', function() {
+const verseText = card.querySelector('.verse-text');
+const versePreview = card.querySelector('.verse-preview');
+const bookmarkBtn = card.querySelector('.book-btn');
+// Toggle visibility of the verse text and hide preview
+if (verseText.style.display === "none" || verseText.style.display === "") {
+verseText.style.display = "block";
+versePreview.style.display = "none"; // Hide the preview when expanded
+// Update comment button classes
+bookmarkBtn.classList.remove('comment');
+bookmarkBtn.classList.add('comment-opened');
+} else {
+verseText.style.display = "none";
+versePreview.style.display = "block"; // Show the preview again when collapsed
+// Restore original comment button classes
+bookmarkBtn.classList.remove('comment-opened');
+bookmarkBtn.classList.add('comment');
+}
+});
+});
+</script>
+{% endblock %}

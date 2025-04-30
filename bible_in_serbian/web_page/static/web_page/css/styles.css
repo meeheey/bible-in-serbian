@@ -700,39 +700,6 @@ select:focus {
     background-color: #f0f0f0;
 }
 
-/* Modern Blockquote Styling */
-blockquote.verse-block {
-    margin: 1.5em 0;
-    padding: 1em 1.5em;
-    background: #fff9e6; /* Soft yellow tint */
-    border-left: 4px solid #ffc107; /* Thematic color accent */
-    color: #333;
-    font-style: italic;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  /* Optional: Decorative open/close quotes */
-  blockquote.verse-block::before {
-    content: "“";
-    font-size: 3em;
-    color: #ffc107;
-    opacity: 0.3;
-    position: absolute;
-    left: 10px;
-    top: -10px;
-  }
-  
-  blockquote.verse-block::after {
-    content: "”";
-    font-size: 3em;
-    color: #ffc107;
-    opacity: 0.3;
-    position: absolute;
-    right: 10px;
-    bottom: -30px;
-  }
-
 /* ============= */
 /* Table Styles */
 /* ============= */

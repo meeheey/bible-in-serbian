@@ -10,7 +10,7 @@
     <div class="books-grid">
         <div class="book-card">
             <div class="book-card-inner">
-                <button class="book-btn bookmark">
+                <button class="book-btn bookmark{% if read_books != 0 %}-opened{% endif %}">
                     <i class="fas fa-book-medical"></i>
                 </button>
                 
@@ -19,7 +19,7 @@
         </div>
         <div class="book-card">
             <div class="book-card-inner">
-                <button class="book-btn bookmark">
+                <button class="book-btn bookmark{% if comments != 0 %}-opened{% endif %}">
                     <i class="fas fa-comment"></i>
                 </button>
                 
@@ -28,7 +28,7 @@
         </div>
         <div class="book-card">
             <div class="book-card-inner">
-                <button class="book-btn bookmark">
+                <button class="book-btn bookmark{% if bookmarks != 0 %}-opened{% endif %}">
                     <i class="fas fa-bookmark"></i>
                 </button>
                 
@@ -37,7 +37,7 @@
         </div>
         <div class="book-card">
             <div class="book-card-inner">
-                <button class="book-btn bookmark">
+                <button class="book-btn bookmark{% if highlights != 0 %}-opened{% endif %}">
                     <i class="fas fa-highlighter"></i>
                 </button>
                 

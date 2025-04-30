@@ -3,7 +3,13 @@
 
 {% block body %}
 <div class="container">
+
     <h2 class="my-4 unselectable">Мој профил</h2>
+
+    <h3 class="my-4 unselectable">Лични подаци</h2>    
+        <p><strong>Корисничко име:</strong> {{ request.user.username }}</p>
+        <p><strong>Адреса електронске поште:</strong> {{ request.user.email }}</p>
+        <p><strong>Члан од:</strong> {{ request.user.date_joined|date:"d. m. Y." }}</p>
 
     <h3 class="my-4 unselectable">Статистика</h2>    
     
@@ -45,5 +51,9 @@
             </div>
         </div>
     </div>
+
+    <h3 class="my-4 unselectable">Сигурност</h2>    
+    <p><a href="{% url 'password_reset' %}">Ресетуј лозинку</a></p>
+
 </div>
 {% endblock %}

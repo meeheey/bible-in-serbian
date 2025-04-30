@@ -242,7 +242,7 @@ export function fetchComments(bookId, targetDivId) {
                 if (verseElement) {
                     const commentIcon = document.createElement('i');
                     commentIcon.className = 'fa fa-comment';
-                    commentIcon.title = `${comment.comment}\nCreated on: ${comment.creation_date}`;
+                    commentIcon.title = `${comment.comment}\nКреиран: ${comment.creation_date}`;
                     verseElement.appendChild(commentIcon);
                 }
             });
@@ -290,7 +290,7 @@ export function fetchBookmarks(bookId, targetDivId) {
                 if (verseElement) {
                     const bookmarkIcon = document.createElement('i');
                     bookmarkIcon.className = 'fa fa-bookmark';
-                    bookmarkIcon.title = `Created on: ${bookmark.creation_date}`;
+                    bookmarkIcon.title = `Креиран: ${bookmark.creation_date}`;
                     verseElement.appendChild(bookmarkIcon);
                 }
             });

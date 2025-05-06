@@ -1,0 +1,785 @@
+/* ==================== */
+/* General Styles       */
+/* ==================== */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 20px;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+.unselectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* ==================== */
+/* Navbar Styles        */
+/* ==================== */
+.navbar {
+    background-color: #343a40;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link {
+    color: #fff !important;
+    font-weight: 400;
+    margin-left: 20px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffc107 !important;
+}
+
+/* ==================== */
+/* Footer Styles        */
+/* ==================== */
+.footer {
+    background-color: #343a40;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.footer a {
+    color: #ffc107;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* ==================== */
+/* Form Styles           */
+/* ==================== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    padding: 10px;
+    border: 2px solid #ffc107;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #ffc107;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.form-control:hover {
+    border-color: #e0a800;
+}
+
+/* ==================== */
+/* Button Styles         */
+/* ==================== */
+.btn-primary {
+    background-color: #ffc107 !important;
+    border: none;
+    color: #343a40;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+.btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border: 2px solid #343a40;
+    color: #343a40;
+    padding: 0px 5px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ffc107;
+    color: #343a40;
+    border-color: #ffc107;
+}
+
+.btn-outline-primary:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* ==================== */
+/* Link Styles           */
+/* ==================== */
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #e0a800;
+    text-decoration: underline;
+}
+
+/* ==================== */
+/* Message Styles        */
+/* ==================== */
+.message {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffc107;
+    color: #343a40;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* ==================== */
+/* Controls (Dropdown & Search) */
+/* ==================== */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center; /* This ensures all items are vertically centered */
+}
+
+/* Style for the checkbox container to align properly */
+.controls > div:nth-child(3) {
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Prevents wrapping of checkbox label */
+}
+
+/* Style for the checkbox label */
+.controls > div:nth-child(3) label {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 200px; /* Give it some minimum width */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: row; /* Keep items in a row on mobile */
+        flex-wrap: wrap; /* Allow wrapping if needed */
+    }
+    
+    .controls > div {
+        margin-bottom: 10px;
+    }
+    
+    /* Make search container full width but keep checkbox inline */
+    .search-container {
+        width: 100%;
+        order: 1; /* Move search to bottom if you prefer */
+    }
+    
+    /* Optional: if you want checkbox and search on same line */
+    .controls > div:nth-child(3) {
+        order: 0;
+        margin-right: 10px;
+    }
+}
+
+/* Dropdown Styles */
+select {
+    padding: 10px;
+    border: 2px solid #ffc107;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 250px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+select:hover {
+    border-color: #e0a800;
+}
+
+select:focus {
+    outline: none;
+    border-color: #ffc107;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* Search Bar Styles */
+.search-container {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 10px;
+    border: 2px solid #ffc107;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s ease;
+}
+
+.search-container input:hover {
+    border-color: #e0a800;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: #ffc107;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* Info Button Styles */
+.info-button {
+    margin-left: 10px;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-button:hover {
+    background-color: #ffc107;
+}
+
+/* Tooltip Styles */
+.tooltip {
+    visibility: hidden;
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 100%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.search-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip code {
+    color: #ffc107;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+/* ==================== */
+/* Verses Container     */
+/* ==================== */
+.verses-container {
+    display: flex;
+    gap: 20px;
+    height: 80vh;
+    overflow: hidden; 
+}
+
+@media (max-width: 768px) {
+    .verses-container {
+        flex-direction: column;
+    }
+    
+    .verses-container > div {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+#verses {
+    flex: 1;
+    overflow-y: auto; 
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 100%;
+}
+
+.verses-container div {
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#verses1, #verses2 {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 100%;
+}
+
+/* ==================== */
+/* Verse Styles         */
+/* ==================== */
+.verse {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.verse strong {
+    color: #007bff;
+}
+
+
+.selected {
+    border: 2px solid #007bff !important; 
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+/* Highlight Styles */
+.highlight {
+    padding: 0.1em;
+    border-radius: 0.2em;
+    transition: background-color 0.2s;
+}
+
+.highlight.yellow {
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+.highlight.blue {
+    background-color: rgba(0, 0, 255, 0.3);
+}
+
+.highlight.green {
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+.highlight.pink {
+    background-color: rgba(255, 192, 203, 0.5);
+}
+
+.highlight-options {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.highlight-color {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.highlight-color.yellow {
+    background-color: #ffeb3b;
+}
+
+.highlight-color.blue {
+    background-color: #2196f3;
+}
+
+.highlight-color.green {
+    background-color: #4caf50;
+}
+
+.highlight-color.pink {
+    background-color: #e91e63;
+}
+
+.highlight-color:hover {
+    transform: scale(1.1);
+}
+
+.highlight-options-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+/*Comment Styles */
+.fa.fa-comment {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+/*Bookmark Styles */
+.fa.fa-bookmark {
+    margin-left: 5px;
+    cursor: pointer;
+    color: #007bff;
+}
+
+/* ==================== */
+/* Floating Box Styles   */
+/* ==================== */
+#floating-box {
+    position: absolute;
+    width: 220px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: move;
+    font-family: 'Roboto', sans-serif;
+    z-index: 1000; /* Ensure it stays on top */
+    transition: all 0.3s ease;
+}
+
+#floating-box #header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* ==================== */
+/* Floating Box Buttons  */
+/* ==================== */
+
+#floating-box button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    margin: 8px 0;
+    background-color: #ffc107;
+    border: none;
+    border-radius: 5px;
+    color: #343a40;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#floating-box button:hover {
+    background-color: #e0a800;
+    color: #fff;
+}
+
+#floating-box button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+}
+
+/* Specific button styles for consistency */
+#floating-box #highlight {
+    background-color: #ffc107;
+}
+
+#floating-box #comment {
+    background-color: #ffc107;
+}
+
+#floating-box #quote {
+    background-color: #ffc107;
+}
+
+#floating-box #bookmark {
+    background-color: #ffc107;
+}
+
+#comment-text {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    padding-right: 10px;    /* Adds padding to the right */
+}
+
+/* ==================== */
+/* Book Grid Styles     */
+/* ==================== */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.book-acronym {
+    margin-top: 10px;
+    font-weight: 500;
+    color: #343a40;
+    text-align: center;
+}
+
+.book-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Read state - using your yellow theme */
+.book-btn.read {
+    background-color: #ffc107;
+    color: #343a40;
+}
+
+/* Unread state */
+.book-btn.unread {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+/* Unread state */
+.book-btn.bookmark {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.book-btn.bookmark-opened {
+    background-color: #ffc107;
+    color: #343a40;
+}
+
+/* Unread state */
+.book-btn.comment {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.book-btn.comment-opened {
+    background-color: #ffc107;
+    color: #343a40;
+}
+
+
+.book-btn.read:hover {
+    background-color: #e0a800;
+}
+
+.book-btn.unread:hover {
+    background-color: #dee2e6;
+}
+
+/* ==================== */
+/* Book Card Link Styles */
+/* ==================== */
+.book-card-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.book-link:hover .book-acronym {
+    color: #ffc107;
+    text-decoration: underline;
+}
+
+/* Make sure button clicks don't trigger link */
+.book-btn {
+    position: relative;
+    z-index: 2;
+}
+
+.verse-preview p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ensures that long text is truncated with an ellipsis */
+}
+
+.verse-text {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    color: #333;
+}
+
+.read-more {
+    color: #007bff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    background-color: #f0f0f0;
+}
+
+/* ============= */
+/* Table Styles */
+/* ============= */
+
+.bible-table-container {
+    margin-bottom: 3rem;
+}
+.table {
+    table-layout: fixed;
+}
+.table th, .table td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+.table thead th {
+    border-bottom-width: 2px;
+    background-color: #343a40;
+    color: white;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+.text-nowrap {
+    white-space: nowrap;
+}
+
+
+/* ============= */
+/* Comment form */
+/* ============= */
+
+.comment-form {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-top: 15px;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comment-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #343a40;
+    margin-bottom: 15px;
+}
+
+#comment-text {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.comment-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.existing-comment {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+    white-space: pre-wrap; /* Preserves line breaks and spaces */
+    word-wrap: break-word; /* Breaks long words if needed */
+}
+
+.comment-actions {
+    margin-top: 10px;
+}
+
+#comment-text {
+    padding: 15px;
+    width: 100%;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    min-height: 100px;
+    font-family: inherit;
+}

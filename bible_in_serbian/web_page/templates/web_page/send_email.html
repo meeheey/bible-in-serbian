@@ -1,0 +1,40 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+<h2>Контакт</h2>
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        {{ form.name }}
+        {% if form.name.errors %}
+            <div class="error">{{ form.name.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="error">{{ form.email.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.subject }}
+        {% if form.subject.errors %}
+            <div class="error">{{ form.subject.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.message }}
+        {% if form.message.errors %}
+            <div class="error">{{ form.message.errors }}</div>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Пошаљи мејл</button>
+</form>
+
+{% endblock %}

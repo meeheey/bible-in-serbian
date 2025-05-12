@@ -7,11 +7,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from .utils import account_activation_token
 from .models import User, Comment, Bookmark, ReadBook, Highlight
+from .forms import EmailForm
 from verse_fetcher.models import Books, Verses
 
 
@@ -20,6 +22,12 @@ def index(request):
     return render(request, "web_page/index.html", {
         "books": books
     })
+
+def project_info(request):
+    return render(request, "web_page/project_info.html")
+
+def translations_info(request):
+    return render(request, "web_page/translations_info.html")
 
 def login_view(request):
     if request.method == "POST":
@@ -205,3 +213,32 @@ def user_profile(request):
         "bookmarks": bookmarks,
         "highlights": highlights
     })
+
+def send_email(request):
+    if request.method == 'POST':
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            # Get form data
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            
+            # Create the email content
+            email_subject = f"Порука од корисника: {name}: {subject}"
+            email_body = f"Од корисника: {name}\nАдреса електронске поште: {email}\n\nПорука:\n{message}"
+
+            # Send the email
+            send_mail(
+                email_subject,
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,  # Sender's email address
+                [settings.DEFAULT_FROM_EMAIL],  # The recipient (the server's email)
+            )
+
+            return render(request, 'web_page/send_email_confirmation.html')
+
+    else:
+        form = EmailForm()
+
+    return render(request, 'web_page/send_email.html', {'form': form})

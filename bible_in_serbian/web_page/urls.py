@@ -21,6 +21,9 @@ urlpatterns = [
     path('my_profile/', views.user_profile, name='user_profile'),
     path('random_verse_generator', views.random_verse_generator, name='random_verse_generator'),
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    path('project_info', views.project_info, name='project_info'),
+    path('translations_info', views.translations_info, name='translations_info'),
+    path('send_email/', views.send_email, name='send_email'),
     path(
         'password-reset/',
         auth_views.PasswordResetView.as_view(

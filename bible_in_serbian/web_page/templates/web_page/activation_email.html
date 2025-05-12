@@ -1,5 +1,5 @@
-Hi {{ user.username }},
+Здраво, {{ user.username }}!
 
-Please click the link below to activate your account:
+Кликни на линк испод како би активирао свој налог:
 
 http://{{ domain }}{% url 'activate' uidb64=uid token=token %}

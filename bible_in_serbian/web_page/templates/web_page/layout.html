@@ -22,7 +22,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user"></i> {% if user.is_authenticated %}<strong>{{ user.username }}</strong> {% else %} Нисте пријављени {% endif %}
+                            <i class="fas fa-user"></i> {% if user.is_authenticated %}<strong>{{ user.username }}</strong> {% else %} Аноним {% endif %}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% if user.is_authenticated %}
@@ -71,8 +71,8 @@
 
     <footer class="footer">
         <div class="container unselectable">
-            <p>&copy; 2025 Свето писмо. All rights reserved.</p>
-            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+            <p>&copy; 2025 Свето писмо. Аутор сајта Милош Михаиловић.</p>
+            <p><a href="{% url 'project_info' %}">О пројекту</a> | <a href="{% url 'translations_info' %}">О преводима</a> | <a href="{% url 'send_email' %}">Контакт</a> </p>
         </div>
     </footer>
 

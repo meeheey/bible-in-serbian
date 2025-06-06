@@ -241,26 +241,49 @@ document.addEventListener('DOMContentLoaded', function () {
     
         const formattedText = `${cleanedText} (${verseReference})`;
         
-        navigator.clipboard.writeText(formattedText)
-            .then(() => {
-                alert('Стих је копиран у клипборд!');
-            })
-            .catch(err => {
-                console.error('Грешка при копирању:', err);
-                const textarea = document.createElement('textarea');
-                textarea.value = formattedText;
-                document.body.appendChild(textarea);
-                textarea.select();
-                try {
-                    document.execCommand('copy');
+        // Create a temporary textarea element
+        const textarea = document.createElement('textarea');
+        textarea.value = formattedText;
+        textarea.style.position = 'fixed';  // Prevent scrolling to bottom
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            // Try using modern clipboard API first
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(formattedText)
+                    .then(() => {
+                        alert('Стих је копиран у клипборд!');
+                    })
+                    .catch(() => {
+                        // If modern API fails, fall back to execCommand
+                        fallbackCopy();
+                    });
+            } else {
+                // If clipboard API not available, use execCommand
+                fallbackCopy();
+            }
+        } catch (err) {
+            fallbackCopy();
+        } finally {
+            document.body.removeChild(textarea);
+        }
+        
+        function fallbackCopy() {
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
                     alert('Стих је копиран у клипборд!');
-                } catch (e) {
-                    alert('Није успело копирање стиха. Молимо пробајте ручно.');
+                } else {
+                    throw new Error('Copy command failed');
                 }
-                document.body.removeChild(textarea);
-            });
+            } catch (err) {
+                console.error('Грешка при копирању:', err);
+                alert('Није успело копирање стиха. Молимо пробајте ручно.');
+            }
+        }
     }
-
+    
     // Bookmark functions
     function toggleBookmark() {
         if (isBookmarked) {

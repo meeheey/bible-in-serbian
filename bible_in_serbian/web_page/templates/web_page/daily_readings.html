@@ -1,0 +1,42 @@
+{% extends "web_page/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 class="my-4 unselectable">Читања за {{ result.julian_date }} по јулијанском календару ({{ result.gregorian_date }})</h2>
+
+  {% for reading in result.readings %}
+<h3 class="my-4 unselectable">{{ reading.reference }}</h3>
+    <div class="verses-container">
+      <div id="verses">
+        {% for verse in reading.verses %}
+          <div class="verse"
+               data-book-id="{{ verse.book_id }}"
+               data-book-acronym="{{ verse.book_acronym }}"
+               data-chapter="{{ verse.chapter }}"
+               data-chapter-mask="{{ verse.chapter_mask }}"
+               data-verse-number="{{ verse.verse_number }}"
+               data-verse-number-mask="{{ verse.verse_number_mask }}">
+            <strong>
+              <a href="{% url 'view_verse' verse.book_id verse.chapter verse.verse_number %}">
+                {% if verse.verse_number == 0 %}
+                  {{ verse.chapter_mask }}
+                {% else %}
+                  {% if verse.chapter_mask and verse.verse_number_mask %}
+                    {{ verse.chapter_mask }}:{{ verse.verse_number_mask }}
+                  {% else %}
+                    {{ verse.chapter_mask|default:"" }}{{ verse.verse_number_mask|default:"" }}
+                  {% endif %}
+                {% endif %}
+              </a>
+            </strong>
+            {% if verse.verse_number == 0 %}
+              <em>{{ verse.verse }}</em>
+            {% else %}
+              {{ verse.verse }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

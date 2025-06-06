@@ -11,11 +11,15 @@ from django.core.mail import EmailMessage, send_mail
 from django.contrib.auth import get_user_model
 from django.conf import settings
 
-from .utils import account_activation_token
+from .utils import account_activation_token, get_book_id
 from .models import User, Comment, Bookmark, ReadBook, Highlight
 from .forms import EmailForm
 from verse_fetcher.models import Books, Verses
 
+from datetime import datetime
+
+import requests
+import json
 
 def index(request):
     books = Books.objects.all()
@@ -242,3 +246,66 @@ def send_email(request):
         form = EmailForm()
 
     return render(request, 'web_page/send_email.html', {'form': form})
+
+def daily_readings(request):
+    # Construct the API URL
+    url = "https://orthocal.info/api/julian/"
+  
+    try:
+        # Make the API request
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        
+        # Parse the JSON response
+        data = response.json()
+        
+        # Extract relevant information
+        result = {
+            "julian_date": f"{data['day']:02d}. {data['month']:02d}. {data['year']}.",
+            "gregorian_date": datetime.now().strftime("%d. %m. %Y"),
+            "readings": [],
+        }
+        
+        # Process readings
+        for reading in data['readings']:
+            reading_info = {
+                "reference": reading['display'],
+                "verses": []
+            }
+            
+            for verse in reading['passage']:
+                verse_obj = Verses.objects.get(
+                    book=get_book_id(verse['book']), 
+                    chapter=verse['chapter'], 
+                    verse_number=verse['verse']
+                )
+                reading_info['verses'].append({
+                    'book_id': verse_obj.book.id,
+                    'book_acronym': verse_obj.book.acronym,
+                    'chapter': verse_obj.chapter,
+                    'chapter_mask': verse_obj.chapter_mask,
+                    'verse_number': verse_obj.verse_number,
+                    'verse_number_mask': verse_obj.verse_number_mask,
+                    'verse': verse_obj.verse
+                })
+
+                first = reading_info['verses'][0]
+                last = reading_info['verses'][-1]
+                reading_info["reference"] = (
+                    f"{first['book_acronym']} од {first['chapter_mask']}:{first['verse_number_mask']} "
+                    f"закључно са {last['chapter_mask']}:{last['verse_number_mask']}"
+                )           
+
+            
+            result['readings'].append(reading_info)
+        
+        return render(request, 'web_page/daily_readings.html', {
+                "result": result
+            })
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data from API: {e}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON response: {e}")
+        return None

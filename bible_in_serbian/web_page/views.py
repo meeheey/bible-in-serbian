@@ -247,9 +247,10 @@ def send_email(request):
 
     return render(request, 'web_page/send_email.html', {'form': form})
 
-def daily_readings(request):
+def daily_readings(request, year, month, day):
     # Construct the API URL
-    url = "https://orthocal.info/api/julian/"
+    base_url = "https://orthocal.info/api/julian/"
+    url = f"{base_url}{year}/{month:02d}/{day:02d}"
   
     try:
         # Make the API request
@@ -261,44 +262,51 @@ def daily_readings(request):
         
         # Extract relevant information
         result = {
-            "julian_date": f"{data['day']:02d}. {data['month']:02d}. {data['year']}.",
-            "gregorian_date": datetime.now().strftime("%d. %m. %Y"),
+            "julian_date": f"{data['day']:01d}. {data['month']:01d}. {data['year']}.",
+            "gregorian_date": f"{day:01d}. {month:01d}. {year}.",
             "readings": [],
         }
         
         # Process readings
         for reading in data['readings']:
             reading_info = {
+                "source": reading['source'],
+                "description": reading['description'],
                 "reference": reading['display'],
                 "verses": []
             }
-            
-            for verse in reading['passage']:
-                verse_obj = Verses.objects.get(
-                    book=get_book_id(verse['book']), 
-                    chapter=verse['chapter'], 
-                    verse_number=verse['verse']
-                )
-                reading_info['verses'].append({
-                    'book_id': verse_obj.book.id,
-                    'book_acronym': verse_obj.book.acronym,
-                    'chapter': verse_obj.chapter,
-                    'chapter_mask': verse_obj.chapter_mask,
-                    'verse_number': verse_obj.verse_number,
-                    'verse_number_mask': verse_obj.verse_number_mask,
-                    'verse': verse_obj.verse
-                })
 
-                first = reading_info['verses'][0]
-                last = reading_info['verses'][-1]
-                reading_info["reference"] = (
-                    f"{first['book_acronym']} од {first['chapter_mask']}:{first['verse_number_mask']} "
-                    f"закључно са {last['chapter_mask']}:{last['verse_number_mask']}"
-                )           
+            if reading['source'] in ["Gospel", "Epistle"] and reading['description'] in [""]:
+                try:
+                    for verse in reading['passage']:
+                        verse_obj = Verses.objects.get(
+                            book=get_book_id(verse['book']), 
+                            chapter=verse['chapter'], 
+                            verse_number=verse['verse']
+                        )
+                        reading_info['verses'].append({
+                            'book_id': verse_obj.book.id,
+                            'book_acronym': verse_obj.book.acronym,
+                            'chapter': verse_obj.chapter,
+                            'chapter_mask': verse_obj.chapter_mask,
+                            'verse_number': verse_obj.verse_number,
+                            'verse_number_mask': verse_obj.verse_number_mask,
+                            'verse': verse_obj.verse
+                        })
 
-            
-            result['readings'].append(reading_info)
-        
+                    # Only create reference if all verses succeeded
+                    first = reading_info['verses'][0]
+                    last = reading_info['verses'][-1]
+                    reading_info["reference"] = (
+                        f"{first['book_acronym']} од {first['chapter_mask']}:{first['verse_number_mask']} "
+                        f"закључно са {last['chapter_mask']}:{last['verse_number_mask']}"
+                    )
+
+                    result['readings'].append(reading_info)
+
+                except Verses.DoesNotExist:
+                    print("Verse not found; skipping this reading.")
+
         return render(request, 'web_page/daily_readings.html', {
                 "result": result
             })

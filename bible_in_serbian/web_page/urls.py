@@ -23,7 +23,7 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('project_info', views.project_info, name='project_info'),
     path('translations_info', views.translations_info, name='translations_info'),
-    path('daily_readings/', views.daily_readings, name='daily_readings'),
+    path('daily_readings/<int:year>/<int:month>/<int:day>/', views.daily_readings, name='daily_readings'),
     path('send_email/', views.send_email, name='send_email'),
     path(
         'password-reset/',
